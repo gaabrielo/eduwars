@@ -4,9 +4,9 @@ import { CSSProperties } from 'react';
 export default function LevelPlacementsLayer({ level }: LevelProps) {
   return level.placements
     .filter((placement: any) => {
-      return !placement.hasBeenCollected;
+      return placement && !placement.hasBeenCollected;
     })
-    .map((placement) => {
+    .map((placement: any) => {
       const [x, y] = placement.displayXY();
 
       const style: CSSProperties = {

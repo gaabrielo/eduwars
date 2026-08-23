@@ -47,6 +47,10 @@ export class DirectionControls {
     return this.heldDirections[0];
   }
 
+  clear() {
+    this.heldDirections = [];
+  }
+
   unbind() {
     document.removeEventListener('keydown', this.directionKeyDownHandler);
     document.removeEventListener('keyup', this.directionKeyUpHandler);

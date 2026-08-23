@@ -1,46 +1,32 @@
-import { Calendar, Sun } from 'lucide-react';
-import { CharacterSelect } from './CharacterSelect';
-import { EnergyCount } from './EnergyCount';
-import { PLACEMENT_TYPE_ENERGY_DRINK } from '@/utils/consts';
-import { Item } from '@/components/hud/HeroHud/Item';
-import { Separator } from '@/components/ui/primitives/Separator';
-import { SettingsMenu } from '@/components/hud/HeroHud/SettingsMenu';
+import { Sun } from 'lucide-react';
+import { useRecoilValue } from 'recoil';
+import { currentDayAtom } from '@/atoms/currentDayAtom';
+import { NineSliceBox } from './NineSliceBox';
+import { KnowledgeBar } from './KnowledgeBar';
 
 export function HeroHud({ level }: any) {
-  const currentEnergy = level.placements.filter((p) => {
-    return p.type === PLACEMENT_TYPE_ENERGY_DRINK && !!p.hasBeenCollected;
-  }).length;
-
-  const energyNeeded = 3;
+  const currentDay = useRecoilValue(currentDayAtom);
 
   return (
-    <div className="absolute left-6 top-6  bg-white rounded-md border-2 border-b-4 border-gray-800 p-3 flex items-center gap-3 font-mono">
-      {/* <div className="flex items-center w-full gap-3 bg-slate-100 p-4 rounded-md shadow-inner shadow-input"></div> */}
-      <div className="bg-yellow-400 rounded-2xl px-3 py-2 font-semibold flex gap-3 text-slate-950">
-        <Sun
-          className="w-6 h-6 fill-slate-950 font-black"
-          absoluteStrokeWidth
-        />
-        <span>DIA 1</span>
-      </div>
-      <Item src={'/energy-drink-icon.svg'} count={currentEnergy} />
-      {/* <Item src={'/lamen-icon.svg'} count={currentEnergy} />
-      <Item src={'/clover-icon.svg'} count={currentEnergy} /> */}
+    <div className="absolute left-6 top-6 z-50">
+      <NineSliceBox scale={4}>
+        <div className="flex items-center gap-4">
+          {/* Day Indicator Pill */}
+          <div className="bg-yellow-400 rounded-2xl px-4 py-1 font-bold flex items-center gap-2 text-slate-950 shadow-sm border-2 border-yellow-500">
+            <Sun
+              className="w-5 h-5 fill-slate-950"
+              strokeWidth={3}
+            />
+            <span className="text-lg tracking-wider">DIA {currentDay}</span>
+          </div>
 
-      {/* <div className="w-full text-right">
-        <progress value={currentEnergy} max={energyNeeded} className="w-full" />
-        <span>
-          {currentEnergy}/{energyNeeded}
-        </span>
-      </div> */}
-      {/* <div>
-        <h1 className="mb-1">Configurações</h1>
-        <div className="w-full h-[1px] bg-gray-400" />
-      </div>
+          {/* Spacer if we need to add more items inside the box later */}
+          <div className="w-12" />
+        </div>
 
-       */}
-      <CharacterSelect />
-      {/* <SettingsMenu /> */}
+        {/* Knowledge Bar overlapping the bottom edge */}
+        <KnowledgeBar />
+      </NineSliceBox>
     </div>
   );
 }

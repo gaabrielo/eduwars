@@ -12,6 +12,8 @@ interface PlacementProperties {
   type: string;
   x: number;
   y: number;
+  width?: number;
+  height?: number;
   level: LevelProps;
 }
 
@@ -20,6 +22,8 @@ export class Placement {
   type: string;
   x: number;
   y: number;
+  width: number;
+  height: number;
   level: LevelProps;
   travelPixelsPerFrame: number;
   movingPixelsRemaining: number;
@@ -33,6 +37,8 @@ export class Placement {
     this.type = properties.type;
     this.x = properties.x;
     this.y = properties.y;
+    this.width = properties.width || 1;
+    this.height = properties.height || 1;
     this.level = level;
 
     this.travelPixelsPerFrame = 1.5;
@@ -46,7 +52,7 @@ export class Placement {
 
   tick() {}
 
-  isSolidForBody(_body) {
+  isSolidForBody(_body: any) {
     return false;
   }
 

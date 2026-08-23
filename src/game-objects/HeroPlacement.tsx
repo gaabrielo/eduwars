@@ -136,9 +136,18 @@ export class HeroPlacement extends Placement {
     }
 
     const battleLevel = collision.renderBattleLevel();
-
     if (battleLevel) {
-      this.level.battleMode();
+      this.level.startBattle?.(battleLevel);
+    }
+
+    const interactable = collision.withInteractablePlacement();
+    if (interactable) {
+      interactable.interact();
+    }
+
+    const teleportTrigger = collision.withTeleportPlacement();
+    if (teleportTrigger) {
+      teleportTrigger.teleport();
     }
   }
 

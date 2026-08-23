@@ -3,11 +3,16 @@ export interface LevelProps {
     theme: string;
     tilesWidth: number;
     tilesHeight: number;
+    backgroundImage?: string;
+    collisionGrid?: number[][];
     placements: LevelPlacementsProps[];
-    isPositionOutOfBounds: () => void;
+    isPositionOutOfBounds: (x: number, y: number) => boolean;
     isBattleMode: boolean;
+    cameraTransformX?: number;
+    cameraTransformY?: number;
   };
-  battleMode: () => void;
+  startBattle?: (battleFrame: unknown) => void;
+  currentDay?: number;
 }
 
 export interface LevelPlacementsProps {
@@ -30,4 +35,20 @@ export interface PlacementConfigProps {
   x: number;
   y: number;
   type: string;
+  battleId?: string;
+  day?: number;
+  enemy?: BattleEnemyConfig;
+}
+
+export interface BattleEnemyConfig {
+  name: string;
+  spriteFrame: string;
+  entry: {
+    x: number;
+    y: number;
+  };
+  target: {
+    x: number;
+    y: number;
+  };
 }

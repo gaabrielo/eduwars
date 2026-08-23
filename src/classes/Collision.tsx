@@ -18,7 +18,11 @@ export class Collision {
   scanPlacementsAtPosition() {
     this.placementsAtPosition = this.level.placements.filter((p: any) => {
       const isSelf = p.id === this.forBody.id;
-      return !isSelf && p.x === this.x && p.y === this.y;
+      const pWidth = p.width || 1;
+      const pHeight = p.height || 1;
+      const inXBounds = this.x >= p.x && this.x < p.x + pWidth;
+      const inYBounds = this.y >= p.y && this.y < p.y + pHeight;
+      return !isSelf && inXBounds && inYBounds;
     });
     // console.log(
     //   '🚀 ~ Collision ~ this.placementsAtPosition=this.level.placements.filter ~ placementsAtPosition:',
@@ -44,6 +48,18 @@ export class Collision {
   renderBattleLevel() {
     return this.placementsAtPosition.find((p: any) => {
       return p.renderBattleInCollide();
+    });
+  }
+
+  withInteractablePlacement() {
+    return this.placementsAtPosition.find((p: any) => {
+      return typeof p.interact === 'function';
+    });
+  }
+
+  withTeleportPlacement() {
+    return this.placementsAtPosition.find((p: any) => {
+      return typeof p.teleport === 'function';
     });
   }
 }

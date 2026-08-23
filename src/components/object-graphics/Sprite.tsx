@@ -6,9 +6,10 @@ import { useRecoilValue } from 'recoil';
 interface Props {
   frameCoordinate: string;
   size?: number;
+  showInteractionPrompt?: boolean;
 }
 
-function Sprite({ frameCoordinate, size = 16 }: Props) {
+function Sprite({ frameCoordinate, size = 16, showInteractionPrompt }: Props) {
   const spriteSheetImage = useRecoilValue(spriteSheetImageAtom)!;
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -38,7 +39,33 @@ function Sprite({ frameCoordinate, size = 16 }: Props) {
     );
   }, [frameCoordinate]);
 
-  return <canvas width={size} height={size} ref={canvasRef} />;
+  return (
+    <div style={{ position: 'relative', width: size, height: size }}>
+      <canvas width={size} height={size} ref={canvasRef} />
+      {showInteractionPrompt && (
+        <div
+          style={{
+            position: 'absolute',
+            top: -16,
+            left: '50%',
+            transform: 'translateX(-50%)',
+            backgroundColor: 'white',
+            color: 'black',
+            border: '1px solid black',
+            borderRadius: 4,
+            padding: '0 4px',
+            fontSize: 10,
+            fontWeight: 'bold',
+            zIndex: 100,
+            pointerEvents: 'none',
+            boxShadow: '0 1px 2px rgba(0,0,0,0.5)',
+          }}
+        >
+          E
+        </div>
+      )}
+    </div>
+  );
 }
 
 export default React.memo(Sprite);
