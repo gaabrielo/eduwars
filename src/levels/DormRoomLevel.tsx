@@ -46,7 +46,6 @@ const level = {
     // { id: 1, x: 0, y: 0, type: PLACEMENT_TYPE_WALL },
     // { id: 2, x: 1, y: 0, type: PLACEMENT_TYPE_WALL },
     // Interactive Overworld Objects
-    { id: 11, x: 15, y: 7, type: "CLASSROOM", spriteFrame: "0x0" }, // Trigger Classroom UI
     { id: 13, x: 12, y: 10, type: "WARDROBE", spriteFrame: "2x0" }, // Decorative/Solid
     { id: 14, x: 15, y: 12, type: "DECORATIVE", spriteFrame: "3x0" }, // Y-Sorted Tree/Prop
 

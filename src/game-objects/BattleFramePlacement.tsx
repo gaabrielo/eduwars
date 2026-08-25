@@ -3,6 +3,7 @@ import { Placement } from '@/game-objects/Placement';
 import { PLACEMENT_TYPE_ENERGY_DRINK } from '@/utils/consts';
 import { TILES } from '@/utils/tiles';
 import { BattleEnemyConfig } from '@/utils/types';
+import { getLessonByDay } from '@/data/pythonCourse';
 
 export class BattleFramePlacement extends Placement {
   battleId: string;
@@ -27,7 +28,7 @@ export class BattleFramePlacement extends Placement {
   }
 
   renderBattleInCollide() {
-    return this.isAvailable;
+    return this.isAvailable && this.isLessonWatched;
   }
 
   get isAvailable() {
@@ -39,11 +40,39 @@ export class BattleFramePlacement extends Placement {
     );
   }
 
+  get isLessonWatched() {
+    if (this.battleDay === null || !getLessonByDay(this.battleDay)) {
+      return true;
+    }
+
+    return this.level.watchedLessonDays?.includes(this.battleDay) ?? false;
+  }
+
+  get isLocked() {
+    return Boolean(
+      this.battleDay !== null && this.isAvailable && !this.isLessonWatched
+    );
+  }
+
+  renderLockedMessageInCollide() {
+    return this.isLocked;
+  }
+
+  notifyLocked() {
+    window.dispatchEvent(new CustomEvent('BATTLE_LOCKED'));
+  }
+
   completeBattle() {
     this.hasBeenCompleted = true;
   }
 
   renderComponent() {
+    if (this.isLocked) {
+      return (
+        <Sprite frameCoordinate={TILES.BATTLE_FRAME_TOP_LEFT_DISABLED} size={32} />
+      );
+    }
+
     if (!this.isAvailable) return null;
 
     return (

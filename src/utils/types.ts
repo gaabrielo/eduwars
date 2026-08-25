@@ -11,8 +11,15 @@ export interface LevelProps {
     cameraTransformX?: number;
     cameraTransformY?: number;
   };
-  startBattle?: (battleFrame: unknown) => void;
+  startBattle?: (battleFrame: unknown, battleOrigin?: HeroPosition) => void;
   currentDay?: number;
+  watchedLessonDays?: number[];
+}
+
+export interface HeroPosition {
+  x: number;
+  y: number;
+  facingDirection: string;
 }
 
 export interface LevelPlacementsProps {
@@ -40,6 +47,12 @@ export interface PlacementConfigProps {
   enemy?: BattleEnemyConfig;
 }
 
+export interface NPCPlacementConfig extends PlacementConfigProps {
+  npcId: string;
+  dialogueId: string;
+  spriteFrame: string;
+}
+
 export interface BattleEnemyConfig {
   name: string;
   spriteFrame: string;
@@ -51,4 +64,27 @@ export interface BattleEnemyConfig {
     x: number;
     y: number;
   };
+}
+
+export interface DialogueLine {
+  speaker: string;
+  text: string;
+}
+
+export interface DialogueVariant {
+  id: string;
+  priority: number;
+  minDay?: number;
+  maxDay?: number;
+  minKnowledge?: number;
+  maxKnowledge?: number;
+  requiredFlags?: string[];
+  excludedFlags?: string[];
+  lines: DialogueLine[];
+  setFlags?: string[];
+}
+
+export interface NPCDialogueDefinition {
+  id: string;
+  variants: DialogueVariant[];
 }

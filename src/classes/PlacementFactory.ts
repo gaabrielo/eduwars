@@ -7,6 +7,7 @@ import { DecorativePlacement } from '@/game-objects/DecorativePlacement';
 import { WardrobePlacement } from '@/game-objects/WardrobePlacement';
 import { ClassroomPlacement } from '@/game-objects/ClassroomPlacement';
 import { NPCBattlePlacement } from '@/game-objects/NPCBattlePlacement';
+import { NPCPlacement } from '@/game-objects/NPCPlacement';
 import { TeleportPlacement } from '@/game-objects/TeleportPlacement';
 import { HeroPlacement } from '@/game-objects/HeroPlacement';
 import { LockerPlacement } from '@/game-objects/LockerPlacement';
@@ -20,6 +21,7 @@ import {
   PLACEMENT_TYPE_WARDROBE,
   PLACEMENT_TYPE_CLASSROOM,
   PLACEMENT_TYPE_NPC_BATTLE,
+  PLACEMENT_TYPE_NPC,
   PLACEMENT_TYPE_TELEPORT,
   PLACEMENT_TYPE_INVISIBLE_WALL,
   PLACEMENT_TYPE_LOCKER,
@@ -55,6 +57,8 @@ class PlacementFactory {
         return new ClassroomPlacement(config, level);
       case PLACEMENT_TYPE_NPC_BATTLE:
         return new NPCBattlePlacement(config, level);
+      case PLACEMENT_TYPE_NPC:
+        return new NPCPlacement(config, level);
       case PLACEMENT_TYPE_TELEPORT:
         return new TeleportPlacement(config, level);
       case PLACEMENT_TYPE_LOCKER:

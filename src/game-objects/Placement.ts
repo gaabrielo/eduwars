@@ -7,14 +7,13 @@ import {
 } from '@/utils/consts';
 import { LevelProps } from '@/utils/types';
 
-interface PlacementProperties {
+export interface PlacementProperties {
   id: number;
   type: string;
   x: number;
   y: number;
   width?: number;
   height?: number;
-  level: LevelProps;
 }
 
 export class Placement {

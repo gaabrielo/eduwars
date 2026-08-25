@@ -3,6 +3,7 @@ import RenderLevel from '@/components/level-layout/RenderLevel';
 import { SPRITE_SHEET_SRC } from '@/utils/consts';
 import { useEffect } from 'react';
 import { useRecoilState } from 'recoil';
+import { GameProgressProvider } from '@/contexts/GameProgressContext';
 
 export default function App() {
   const [spriteSheetImage, setSpriteSheetImage] =
@@ -18,5 +19,9 @@ export default function App() {
 
   if (!spriteSheetImage) return null;
 
-  return <RenderLevel />;
+  return (
+    <GameProgressProvider>
+      <RenderLevel />
+    </GameProgressProvider>
+  );
 }

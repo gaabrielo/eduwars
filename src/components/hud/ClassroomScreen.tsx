@@ -1,12 +1,52 @@
+import { useEffect, useRef, useState } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { overworldStateAtom } from '@/atoms/overworldStateAtom';
 import { currentDayAtom } from '@/atoms/currentDayAtom';
 import { getLessonByDay } from '@/data/pythonCourse';
+import { useGameProgress } from '@/contexts/GameProgressContext';
+import { loadYouTubeIframeApi, YouTubePlayer } from '@/services/youtubeIframeApi';
 
 export default function ClassroomScreen() {
   const [overworldState, setOverworldState] = useRecoilState(overworldStateAtom);
   const currentDay = useRecoilValue(currentDayAtom);
   const lesson = getLessonByDay(currentDay);
+  const { markLessonWatched } = useGameProgress();
+  const iframeRef = useRef<HTMLIFrameElement | null>(null);
+  const playerRef = useRef<YouTubePlayer | null>(null);
+  const [lessonCompleted, setLessonCompleted] = useState(false);
+
+  useEffect(() => {
+    if (overworldState.activeUI !== 'CLASSROOM' || !lesson) return;
+
+    let cancelled = false;
+    setLessonCompleted(false);
+
+    loadYouTubeIframeApi()
+      .then((api) => {
+        if (cancelled || !iframeRef.current) return;
+
+        playerRef.current?.destroy();
+        playerRef.current = new api.Player(iframeRef.current, {
+          events: {
+            onStateChange: (event) => {
+              if (event.data !== api.PlayerState.ENDED) return;
+
+              setLessonCompleted(true);
+              markLessonWatched(lesson.day);
+            },
+          },
+        });
+      })
+      .catch(() => {
+        // The iframe remains usable if the optional completion API is unavailable.
+      });
+
+    return () => {
+      cancelled = true;
+      playerRef.current?.destroy();
+      playerRef.current = null;
+    };
+  }, [lesson, markLessonWatched, overworldState.activeUI]);
 
   if (overworldState.activeUI !== 'CLASSROOM') return null;
 
@@ -18,8 +58,9 @@ export default function ClassroomScreen() {
         </h2>
         {lesson ? (
           <iframe
+            ref={iframeRef}
             className="aspect-video bg-gray-200 w-full rounded mb-6"
-            src={`https://www.youtube-nocookie.com/embed/${lesson.youtubeId}`}
+            src={`https://www.youtube-nocookie.com/embed/${lesson.youtubeId}?enablejsapi=1`}
             title={lesson.title}
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
             allowFullScreen
@@ -28,6 +69,12 @@ export default function ClassroomScreen() {
           <div className="aspect-video bg-gray-200 w-full rounded flex justify-center items-center mb-6">
             <span className="text-gray-500">Todas as aulas disponíveis foram concluídas.</span>
           </div>
+        )}
+
+        {lessonCompleted && (
+          <p className="mb-4 text-sm font-semibold text-green-700">
+            Aula concluída! A batalha do dia está liberada.
+          </p>
         )}
         
         <div className="flex justify-end mt-4">

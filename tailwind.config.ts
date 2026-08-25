@@ -88,10 +88,21 @@ const config: Config = {
           from: { height: 'var(--radix-accordion-content-height)' },
           to: { height: '0' },
         },
+        'damage-float': {
+          '0%': { opacity: '1', transform: 'translateY(0) scale(1)' },
+          '100%': { opacity: '0', transform: 'translateY(-32px) scale(1.2)' },
+        },
+        'enemy-hit': {
+          '0%, 100%': { transform: 'translateX(0)' },
+          '25%': { transform: 'translateX(-4px) rotate(-3deg)' },
+          '75%': { transform: 'translateX(4px) rotate(3deg)' },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
+        'damage-float': 'damage-float 0.8s ease-out forwards',
+        'enemy-hit': 'enemy-hit 0.3s ease-in-out',
       },
     },
   },

@@ -4,6 +4,7 @@ import {
   PLACEMENT_TYPE_HERO,
   PLACEMENT_TYPE_TELEPORT,
   PLACEMENT_TYPE_WALL,
+  PLACEMENT_TYPE_NPC,
 } from '@/utils/consts';
 import { TILES } from '@/utils/tiles';
 
@@ -55,6 +56,15 @@ const level = {
       targetX: 5,
       targetY: 5,
     },
+    {
+      id: 6,
+      x: 11,
+      y: 6,
+      type: PLACEMENT_TYPE_TELEPORT,
+      targetMapId: 'ClassroomLevel',
+      targetX: 5,
+      targetY: 7,
+    },
 
     {
       id: 3,
@@ -86,6 +96,15 @@ const level = {
         entry: { x: 27, y: 7 },
         target: { x: 26, y: 7 },
       },
+    },
+    {
+      id: 5,
+      x: 16,
+      y: 8,
+      type: PLACEMENT_TYPE_NPC,
+      npcId: 'mentor-python',
+      dialogueId: 'mentor-python-main',
+      spriteFrame: TILES.ROGUE_LEFT,
     },
     // We will add more placements later (e.g. Wardrobe, NPCs, Classrooms)
     // Add some boundary walls to test collision on the edges

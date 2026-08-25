@@ -13,6 +13,7 @@ import {
 } from '@/utils/consts';
 import { TILES } from '@/utils/tiles';
 import { Collision } from '@/classes/Collision';
+import { HeroPosition } from '@/utils/types';
 
 const heroRunMap = {
   [CHARACTERS.HERO]: [
@@ -137,7 +138,18 @@ export class HeroPlacement extends Placement {
 
     const battleLevel = collision.renderBattleLevel();
     if (battleLevel) {
-      this.level.startBattle?.(battleLevel);
+      const movement = directionUpdateMap[this.movingPixelsDirection];
+      const battleOrigin: HeroPosition = {
+        x: this.x - movement.x,
+        y: this.y - movement.y,
+        facingDirection: this.spriteFacingDirection,
+      };
+      this.level.startBattle?.(battleLevel, battleOrigin);
+    }
+
+    const lockedBattle = collision.withLockedBattlePlacement();
+    if (lockedBattle) {
+      lockedBattle.notifyLocked();
     }
 
     const interactable = collision.withInteractablePlacement();

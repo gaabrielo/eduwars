@@ -51,6 +51,15 @@ export class Collision {
     });
   }
 
+  withLockedBattlePlacement() {
+    return this.placementsAtPosition.find((p: any) => {
+      return (
+        typeof p.renderLockedMessageInCollide === 'function' &&
+        p.renderLockedMessageInCollide()
+      );
+    });
+  }
+
   withInteractablePlacement() {
     return this.placementsAtPosition.find((p: any) => {
       return typeof p.interact === 'function';

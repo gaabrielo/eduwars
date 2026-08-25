@@ -10,11 +10,21 @@ import {
 import { LevelProps } from '@/utils/types';
 import { BattleFramePlacement } from '@/game-objects/BattleFramePlacement';
 import { NPCBattlePlacement } from '@/game-objects/NPCBattlePlacement';
+import { HeroPosition } from '@/utils/types';
 
 interface BattleReadyPayload {
   fieldId: string;
   name: string;
   spriteFrame: string;
+}
+
+export interface LevelStateOptions {
+  initialHeroPosition?: HeroPosition;
+  collectedPlacementIds?: number[];
+  onHeroPositionChange?: (position: HeroPosition) => void;
+  onPlacementCollected?: (placementId: number) => void;
+  onBattleStarted?: (origin: HeroPosition) => void;
+  watchedLessonDays?: number[];
 }
 
 export class LevelState {
@@ -30,6 +40,7 @@ export class LevelState {
   // hero placement
   heroRef: any;
   isBattleMode: any;
+  inputBlocked: boolean;
   camera: any;
   heroSkin: string;
   completedBattleIds: string[];
@@ -38,6 +49,14 @@ export class LevelState {
   battleModalOpened: boolean;
   onBattleReady: (battle: BattleReadyPayload) => void;
   currentDay: number;
+  watchedLessonDays: number[];
+  battleOrigin: HeroPosition | null;
+  onHeroPositionChange: (position: HeroPosition) => void;
+  onPlacementCollected: (placementId: number) => void;
+  onBattleStarted: (origin: HeroPosition) => void;
+  lastReportedHeroPosition: string;
+  collectedPlacementIds: Set<number>;
+  initialHeroPosition?: HeroPosition;
 
   constructor(
     levelId: string,
@@ -45,7 +64,8 @@ export class LevelState {
     onEmit: (props: LevelProps['level']) => void,
     currentDay = 1,
     completedBattleIds: string[] = [],
-    onBattleReady: (battle: BattleReadyPayload) => void = () => {}
+    onBattleReady: (battle: BattleReadyPayload) => void = () => {},
+    options: LevelStateOptions = {}
   ) {
     this.id = levelId;
     this.onEmit = onEmit;
@@ -53,9 +73,18 @@ export class LevelState {
     this.completedBattleIds = completedBattleIds;
     this.onBattleReady = onBattleReady;
     this.currentDay = currentDay;
+    this.watchedLessonDays = options.watchedLessonDays ?? [];
     this.activeBattleFrame = null;
     this.battleEnemy = null;
     this.battleModalOpened = false;
+    this.inputBlocked = false;
+    this.battleOrigin = null;
+    this.onHeroPositionChange = options.onHeroPositionChange ?? (() => {});
+    this.onPlacementCollected = options.onPlacementCollected ?? (() => {});
+    this.onBattleStarted = options.onBattleStarted ?? (() => {});
+    this.collectedPlacementIds = new Set(options.collectedPlacementIds ?? []);
+    this.initialHeroPosition = options.initialHeroPosition;
+    this.lastReportedHeroPosition = '';
 
     this.directionControls = new DirectionControls();
 
@@ -65,9 +94,11 @@ export class LevelState {
 
   start() {
     this.isBattleMode = false;
+    this.inputBlocked = false;
     this.activeBattleFrame = null;
     this.battleEnemy = null;
     this.battleModalOpened = false;
+    this.battleOrigin = null;
     const levelData = Levels[this.id as keyof typeof Levels];
 
     this.theme = levelData.theme;
@@ -103,6 +134,20 @@ export class LevelState {
     // cache a reference to the hero
     this.heroRef = this.placements.find((p: any) => p.type === PLACEMENT_TYPE_HERO);
 
+    if (this.heroRef && this.initialHeroPosition) {
+      this.heroRef.x = this.initialHeroPosition.x;
+      this.heroRef.y = this.initialHeroPosition.y;
+      this.heroRef.spriteFacingDirection =
+        this.initialHeroPosition.facingDirection;
+    }
+
+    this.placements.forEach((placement: any) => {
+      if (this.collectedPlacementIds.has(placement.id)) {
+        placement.collect();
+      }
+    });
+    this.lastReportedHeroPosition = this.getHeroPositionKey();
+
     // create a camera
     this.camera = new Camera(this);
 
@@ -128,7 +173,7 @@ export class LevelState {
 
   tick() {
     // check for movement here
-    if (!this.isBattleMode && this.directionControls.direction) {
+    if (!this.isBattleMode && !this.inputBlocked && this.directionControls.direction) {
       this.heroRef.controllerMoveRequested(this.directionControls.direction);
     }
 
@@ -136,6 +181,24 @@ export class LevelState {
     this.placements.forEach((placement: any) => {
       placement.tick();
     });
+
+    this.placements.forEach((placement: any) => {
+      if (
+        placement.hasBeenCollected &&
+        !this.collectedPlacementIds.has(placement.id)
+      ) {
+        this.collectedPlacementIds.add(placement.id);
+        this.onPlacementCollected(placement.id);
+      }
+    });
+
+    if (!this.isBattleMode && this.heroRef?.movingPixelsRemaining === 0) {
+      const heroPositionKey = this.getHeroPositionKey();
+      if (heroPositionKey !== this.lastReportedHeroPosition) {
+        this.lastReportedHeroPosition = heroPositionKey;
+        this.onHeroPositionChange(this.getHeroPosition());
+      }
+    }
 
     // update the camera
     this.camera.tick();
@@ -167,11 +230,14 @@ export class LevelState {
     );
   }
 
-  startBattle(battleFrame: BattleFramePlacement) {
+  startBattle(battleFrame: BattleFramePlacement, battleOrigin?: HeroPosition) {
     if (this.isBattleMode || battleFrame.hasBeenCompleted || !battleFrame.enemy) {
       return;
     }
 
+    this.battleOrigin =
+      battleOrigin ?? this.getHeroPosition();
+    this.onBattleStarted(this.battleOrigin);
     this.isBattleMode = true;
     this.directionControls.clear();
     this.activeBattleFrame = battleFrame;
@@ -198,6 +264,15 @@ export class LevelState {
     this.currentDay = day;
   }
 
+  setWatchedLessonDays(days: number[]) {
+    this.watchedLessonDays = days;
+  }
+
+  setInputBlocked(blocked: boolean) {
+    this.inputBlocked = blocked;
+    if (blocked) this.directionControls.clear();
+  }
+
   finishBattle(battleId: string, victory: boolean, playerDefeated = false) {
     if (!this.activeBattleFrame || this.activeBattleFrame.battleId !== battleId) {
       return;
@@ -214,6 +289,7 @@ export class LevelState {
     this.activeBattleFrame = null;
     this.battleEnemy = null;
     this.battleModalOpened = false;
+    this.battleOrigin = null;
     this.directionControls.clear();
 
     if (!playerDefeated) {
@@ -231,13 +307,40 @@ export class LevelState {
     this.activeBattleFrame = null;
     this.battleEnemy = null;
     this.battleModalOpened = false;
+    this.battleOrigin = null;
     this.isBattleMode = false;
     this.directionControls.clear();
+  }
+
+  fleeBattle() {
+    if (!this.activeBattleFrame) return;
+
+    if (this.battleEnemy) {
+      this.deletePlacement(this.battleEnemy);
+    }
+
+    if (this.battleOrigin && this.heroRef) {
+      this.heroRef.x = this.battleOrigin.x;
+      this.heroRef.y = this.battleOrigin.y;
+      this.heroRef.spriteFacingDirection = this.battleOrigin.facingDirection;
+      this.heroRef.movingPixelsRemaining = 0;
+      this.lastReportedHeroPosition = this.getHeroPositionKey();
+    }
+
+    this.activeBattleFrame = null;
+    this.battleEnemy = null;
+    this.battleModalOpened = false;
+    this.battleOrigin = null;
+    this.isBattleMode = false;
+    this.directionControls.clear();
+    this.onEmit(this.getState());
   }
 
   restart(completedBattleIds: string[] = []) {
     this.destroy();
     this.completedBattleIds = completedBattleIds;
+    this.collectedPlacementIds = new Set();
+    this.initialHeroPosition = undefined;
     this.directionControls = new DirectionControls();
     this.start();
   }
@@ -256,9 +359,22 @@ export class LevelState {
     };
   }
 
+  getHeroPosition(): HeroPosition {
+    return {
+      x: this.heroRef.x,
+      y: this.heroRef.y,
+      facingDirection: this.heroRef.spriteFacingDirection,
+    };
+  }
+
+  getHeroPositionKey() {
+    if (!this.heroRef) return '';
+    return `${this.heroRef.x}:${this.heroRef.y}:${this.heroRef.spriteFacingDirection}`;
+  }
+
   destroy() {
     // tear down the level
-    this.gameLoop.stop();
+    this.gameLoop?.stop();
     this.directionControls.unbind();
     this.placements.forEach((p: any) => {
       if (typeof p.destroy === 'function') {
