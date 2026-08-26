@@ -1,5 +1,9 @@
-import { useRecoilState, useRecoilValue } from "recoil";
-import { overworldStateAtom } from "@/atoms/overworldStateAtom";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import {
+  overworldActiveUISelector,
+  overworldBattleEnemySelector,
+  overworldStateAtom,
+} from "@/atoms/overworldStateAtom";
 import { knowledgeStateAtom } from "@/atoms/knowledgeStateAtom";
 import { currentDayAtom } from "@/atoms/currentDayAtom";
 import { getBattleQuestionsForDay, getLessonByDay } from "@/data/pythonCourse";
@@ -8,13 +12,13 @@ import Sprite from "@/components/object-graphics/Sprite";
 import { TILES } from "@/utils/tiles";
 
 export default function BattleQuizScreen() {
-  const [overworldState, setOverworldState] =
-    useRecoilState(overworldStateAtom);
+  const activeUI = useRecoilValue(overworldActiveUISelector);
+  const battleEnemy = useRecoilValue(overworldBattleEnemySelector);
+  const setOverworldState = useSetRecoilState(overworldStateAtom);
   const [knowledge, setKnowledge] = useRecoilState(knowledgeStateAtom);
   const currentDay = useRecoilValue(currentDayAtom);
   const lesson = getLessonByDay(currentDay);
   const questions = getBattleQuestionsForDay(currentDay);
-  const battleEnemy = overworldState.battleEnemy;
   const [npcHealth, setNpcHealth] = useState(questions.length);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [showFeedback, setShowFeedback] = useState<string | null>(null);
@@ -40,7 +44,7 @@ export default function BattleQuizScreen() {
     };
   }, [battleEnemy?.fieldId]);
 
-  if (overworldState.activeUI !== "NPC_BATTLE") return null;
+  if (activeUI !== "NPC_BATTLE") return null;
 
   if (!lesson) {
     return (

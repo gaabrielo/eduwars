@@ -1,13 +1,17 @@
 import { useEffect, useRef, useState } from 'react';
-import { useRecoilState, useRecoilValue } from 'recoil';
-import { overworldStateAtom } from '@/atoms/overworldStateAtom';
+import { useSetRecoilState, useRecoilValue } from 'recoil';
+import {
+  overworldActiveUISelector,
+  overworldStateAtom,
+} from '@/atoms/overworldStateAtom';
 import { currentDayAtom } from '@/atoms/currentDayAtom';
 import { getLessonByDay } from '@/data/pythonCourse';
 import { useGameProgress } from '@/contexts/GameProgressContext';
 import { loadYouTubeIframeApi, YouTubePlayer } from '@/services/youtubeIframeApi';
 
 export default function ClassroomScreen() {
-  const [overworldState, setOverworldState] = useRecoilState(overworldStateAtom);
+  const activeUI = useRecoilValue(overworldActiveUISelector);
+  const setOverworldState = useSetRecoilState(overworldStateAtom);
   const currentDay = useRecoilValue(currentDayAtom);
   const lesson = getLessonByDay(currentDay);
   const { markLessonWatched } = useGameProgress();
@@ -16,7 +20,7 @@ export default function ClassroomScreen() {
   const [lessonCompleted, setLessonCompleted] = useState(false);
 
   useEffect(() => {
-    if (overworldState.activeUI !== 'CLASSROOM' || !lesson) return;
+    if (activeUI !== 'CLASSROOM' || !lesson) return;
 
     let cancelled = false;
     setLessonCompleted(false);
@@ -46,9 +50,9 @@ export default function ClassroomScreen() {
       playerRef.current?.destroy();
       playerRef.current = null;
     };
-  }, [lesson, markLessonWatched, overworldState.activeUI]);
+  }, [lesson, markLessonWatched, activeUI]);
 
-  if (overworldState.activeUI !== 'CLASSROOM') return null;
+  if (activeUI !== 'CLASSROOM') return null;
 
   return (
     <div className="absolute inset-0 bg-black/80 flex flex-col items-center justify-center z-50">

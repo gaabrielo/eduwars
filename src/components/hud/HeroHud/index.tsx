@@ -3,8 +3,9 @@ import { useRecoilValue } from 'recoil';
 import { currentDayAtom } from '@/atoms/currentDayAtom';
 import { NineSliceBox } from './NineSliceBox';
 import { KnowledgeBar } from './KnowledgeBar';
+import { memo } from 'react';
 
-export function HeroHud({ level }: any) {
+function HeroHud() {
   const currentDay = useRecoilValue(currentDayAtom);
 
   return (
@@ -30,3 +31,5 @@ export function HeroHud({ level }: any) {
     </div>
   );
 }
+
+export default memo(HeroHud);

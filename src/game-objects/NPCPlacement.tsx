@@ -1,4 +1,4 @@
-import Sprite from '@/components/object-graphics/Sprite';
+import Hero from '@/components/object-graphics/Hero';
 import { Placement, PlacementProperties } from '@/game-objects/Placement';
 import { LevelProps, NPCPlacementConfig } from '@/utils/types';
 
@@ -63,7 +63,11 @@ export class NPCPlacement extends Placement {
 
   renderComponent(): JSX.Element {
     return (
-      <Sprite frameCoordinate={this.spriteFrame} size={32} showInteractionPrompt={this.isHeroNear} />
+      <Hero
+        frameCoord={this.spriteFrame}
+        yTranslate={0}
+        showInteractionPrompt={this.isHeroNear}
+      />
     );
   }
 }

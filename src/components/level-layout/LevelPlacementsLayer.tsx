@@ -2,7 +2,7 @@ import { LevelProps } from '@/utils/types';
 import { CSSProperties } from 'react';
 
 export default function LevelPlacementsLayer({ level }: LevelProps) {
-  return level.placements
+  return (level.placements as any[])
     .filter((placement: any) => {
       return placement && !placement.hasBeenCollected;
     })
@@ -22,9 +22,12 @@ export default function LevelPlacementsLayer({ level }: LevelProps) {
         zIndex: placement.zIndex(),
       };
 
+      const component = placement.renderComponent();
+      if (!component) return null;
+
       return (
         <div key={placement.id} style={style}>
-          {placement.renderComponent()}
+          {component}
         </div>
       );
     });

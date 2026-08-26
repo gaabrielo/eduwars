@@ -41,6 +41,8 @@ export class LevelState {
   heroRef: any;
   isBattleMode: any;
   inputBlocked: boolean;
+  renderEnabled: boolean;
+  hasPendingRender: boolean;
   camera: any;
   heroSkin: string;
   completedBattleIds: string[];
@@ -78,6 +80,8 @@ export class LevelState {
     this.battleEnemy = null;
     this.battleModalOpened = false;
     this.inputBlocked = false;
+    this.renderEnabled = true;
+    this.hasPendingRender = false;
     this.battleOrigin = null;
     this.onHeroPositionChange = options.onHeroPositionChange ?? (() => {});
     this.onPlacementCollected = options.onPlacementCollected ?? (() => {});
@@ -156,9 +160,37 @@ export class LevelState {
 
   startGameLoop() {
     this.gameLoop?.stop();
-    this.gameLoop = new GameLoop(() => {
-      this.tick();
+    this.gameLoop = new GameLoop({
+      onStep: () => {
+        this.tick();
+      },
+      onRender: () => {
+        this.flushRender();
+      },
     });
+  }
+
+  flushRender() {
+    if (!this.hasPendingRender) return;
+    this.hasPendingRender = false;
+    if (this.renderEnabled) {
+      this.onEmit(this.getState());
+    }
+  }
+
+  forceRender() {
+    this.hasPendingRender = false;
+    if (this.renderEnabled) {
+      this.onEmit(this.getState());
+    }
+  }
+
+  setRenderEnabled(enabled: boolean) {
+    const wasDisabled = !this.renderEnabled && enabled;
+    this.renderEnabled = enabled;
+    if (wasDisabled) {
+      this.forceRender();
+    }
   }
 
   addPlacement(config: any) {
@@ -166,6 +198,12 @@ export class LevelState {
   }
 
   deletePlacement(placementToRemove: any) {
+    if (
+      placementToRemove &&
+      typeof placementToRemove.destroy === 'function'
+    ) {
+      placementToRemove.destroy();
+    }
     this.placements = this.placements.filter((p: any) => {
       return p.id !== placementToRemove.id;
     });
@@ -217,8 +255,10 @@ export class LevelState {
       });
     }
 
-    // emit changes to React
-    this.onEmit(this.getState());
+    // Mark that the React tree should be synced on the next display frame.
+    // The actual emit is coalesced by GameLoop.onRender so multiple fixed
+    // steps in one frame produce only one React reconciliation.
+    this.hasPendingRender = true;
   }
 
   isPositionOutOfBounds(x: number, y: number) {
@@ -296,7 +336,7 @@ export class LevelState {
       this.isBattleMode = false;
     }
 
-    this.onEmit(this.getState());
+    this.forceRender();
   }
 
   resetBattle() {
@@ -333,7 +373,7 @@ export class LevelState {
     this.battleOrigin = null;
     this.isBattleMode = false;
     this.directionControls.clear();
-    this.onEmit(this.getState());
+    this.forceRender();
   }
 
   restart(completedBattleIds: string[] = []) {

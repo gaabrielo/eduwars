@@ -2,12 +2,19 @@ import Sprite from './Sprite';
 import styles from './ElevatedSprite.module.css';
 import { CELL_SIZE } from '@/utils/consts';
 import { TILES } from '@/utils/tiles';
+import { memo } from 'react';
 
-export default function ElevatedSprite({
+interface ElevatedSpriteProps {
+  frameCoordinate: string;
+  size?: number;
+  pxAboveGround?: number;
+}
+
+function ElevatedSprite({
   frameCoordinate,
   size = CELL_SIZE,
   pxAboveGround = 3,
-}: any) {
+}: ElevatedSpriteProps) {
   return (
     <div className={styles.elevatedSprite}>
       <Sprite frameCoordinate={TILES.SHADOW} />
@@ -22,3 +29,5 @@ export default function ElevatedSprite({
     </div>
   );
 }
+
+export default memo(ElevatedSprite);

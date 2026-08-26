@@ -1,14 +1,18 @@
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import { dialogueStateAtom } from '@/atoms/dialogueStateAtom';
-import { overworldStateAtom } from '@/atoms/overworldStateAtom';
+import {
+  overworldActiveUISelector,
+  overworldStateAtom,
+} from '@/atoms/overworldStateAtom';
 import { useGameProgress } from '@/contexts/GameProgressContext';
 
 export default function DialogueScreen() {
-  const [overworldState, setOverworldState] = useRecoilState(overworldStateAtom);
+  const activeUI = useRecoilValue(overworldActiveUISelector);
+  const setOverworldState = useSetRecoilState(overworldStateAtom);
   const [dialogue, setDialogue] = useRecoilState(dialogueStateAtom);
   const { addDialogueFlag } = useGameProgress();
 
-  if (overworldState.activeUI !== 'DIALOGUE' || !dialogue) return null;
+  if (activeUI !== 'DIALOGUE' || !dialogue) return null;
 
   const line = dialogue.lines[dialogue.currentLineIndex];
   const isLastLine = dialogue.currentLineIndex === dialogue.lines.length - 1;

@@ -1,8 +1,9 @@
 import { THEME_TILES_MAP } from '@/utils/consts';
 import MapCell from './MapCell';
 import { LevelProps } from '@/utils/types';
+import { memo } from 'react';
 
-export default function LevelBackgroundTilesLayer({ level }: LevelProps) {
+function LevelBackgroundTilesLayer({ level }: LevelProps) {
   const widthWithWalls = level.tilesWidth + 1;
   const heightWithWalls = level.tilesHeight + 1;
   const tiles = THEME_TILES_MAP[level.theme];
@@ -45,3 +46,14 @@ export default function LevelBackgroundTilesLayer({ level }: LevelProps) {
 
   return <div>{canvases}</div>;
 }
+
+function propsEqual(prev: LevelProps, next: LevelProps): boolean {
+  return (
+    prev.level.theme === next.level.theme &&
+    prev.level.tilesWidth === next.level.tilesWidth &&
+    prev.level.tilesHeight === next.level.tilesHeight &&
+    prev.level.backgroundImage === next.level.backgroundImage
+  );
+}
+
+export default memo(LevelBackgroundTilesLayer, propsEqual);

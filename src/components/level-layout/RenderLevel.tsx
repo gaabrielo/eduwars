@@ -5,8 +5,8 @@ import LevelPlacementsLayer from '@/components/level-layout/LevelPlacementsLayer
 import { useEffect, useRef, useState } from 'react';
 import { LevelState } from '@/classes/LevelState';
 import { LevelProps } from '@/utils/types';
-import { HeroHud } from '@/components/hud/HeroHud';
-import { useRecoilState, useRecoilValue } from 'recoil';
+import HeroHud from '@/components/hud/HeroHud';
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import { currentLevelIdAtom } from '@/atoms/currentLevelIdAtom';
 import { currentDayAtom } from '@/atoms/currentDayAtom';
 import { knowledgeStateAtom } from '@/atoms/knowledgeStateAtom';
@@ -29,12 +29,12 @@ export default function RenderLevel() {
   const [level, setLevel] = useState<LevelProps['level'] | null>(null);
   const [currentLevelId, setCurrentId] = useRecoilState(currentLevelIdAtom);
   const currentDay = useRecoilValue(currentDayAtom);
-  const [, setCurrentDay] = useRecoilState(currentDayAtom);
+  const setCurrentDay = useSetRecoilState(currentDayAtom);
   const knowledge = useRecoilValue(knowledgeStateAtom);
-  const [, setKnowledge] = useRecoilState(knowledgeStateAtom);
+  const setKnowledge = useSetRecoilState(knowledgeStateAtom);
   const characterName = useRecoilValue(currentCharacterNameAtom);
   const [overworldState, setOverworldState] = useRecoilState(overworldStateAtom);
-  const [, setDialogueState] = useRecoilState(dialogueStateAtom);
+  const setDialogueState = useSetRecoilState(dialogueStateAtom);
   const levelStateRef = useRef<LevelState | null>(null);
   const battleSnapshotRef = useRef<BattleSnapshot | null>(null);
   const currentDayRef = useRef(currentDay);
@@ -272,6 +272,14 @@ export default function RenderLevel() {
     );
   }, [overworldState.activeUI]);
 
+  useEffect(() => {
+    const isOverlayOpen = Boolean(
+      overworldState.activeUI &&
+        overworldState.activeUI !== 'NPC_BATTLE'
+    );
+    levelStateRef.current?.setRenderEnabled(!isOverlayOpen);
+  }, [overworldState.activeUI]);
+
   if (!level) return null;
 
   const cameraTranslate = `translate3d(${level.cameraTransformX}, ${level.cameraTransformY}, 0)`;
@@ -313,7 +321,7 @@ export default function RenderLevel() {
         </div>
       </div>
 
-      <HeroHud level={level} />
+      <HeroHud />
       <ClassroomScreen />
       <BattleQuizScreen />
       <BattleDefeatScreen />

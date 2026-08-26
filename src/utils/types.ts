@@ -8,8 +8,8 @@ export interface LevelProps {
     placements: LevelPlacementsProps[];
     isPositionOutOfBounds: (x: number, y: number) => boolean;
     isBattleMode: boolean;
-    cameraTransformX?: number;
-    cameraTransformY?: number;
+    cameraTransformX?: string;
+    cameraTransformY?: string;
   };
   startBattle?: (battleFrame: unknown, battleOrigin?: HeroPosition) => void;
   currentDay?: number;

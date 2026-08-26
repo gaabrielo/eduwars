@@ -1,4 +1,4 @@
-import Sprite from '@/components/object-graphics/Sprite';
+import Hero from '@/components/object-graphics/Hero';
 import { Placement } from '@/game-objects/Placement';
 import {
   CELL_SIZE,
@@ -87,6 +87,6 @@ export class NPCBattlePlacement extends Placement {
   }
 
   renderComponent() {
-    return <Sprite frameCoordinate={this.spriteFrame} size={32} />;
+    return <Hero frameCoord={this.spriteFrame} yTranslate={0} />;
   }
 }

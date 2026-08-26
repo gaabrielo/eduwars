@@ -1,4 +1,4 @@
-import { atom } from 'recoil';
+import { atom, selector } from 'recoil';
 
 export interface BattleEnemyState {
   fieldId: string;
@@ -48,4 +48,18 @@ export const overworldStateAtom = atom<OverworldState>({
     collectedPlacementIdsByLevel: {},
     dialogueFlags: [],
   },
+});
+
+export const overworldActiveUISelector = selector<
+  OverworldState['activeUI']
+>({
+  key: 'overworldActiveUISelector',
+  get: ({ get }) => get(overworldStateAtom).activeUI,
+});
+
+export const overworldBattleEnemySelector = selector<
+  BattleEnemyState | null
+>({
+  key: 'overworldBattleEnemySelector',
+  get: ({ get }) => get(overworldStateAtom).battleEnemy,
 });

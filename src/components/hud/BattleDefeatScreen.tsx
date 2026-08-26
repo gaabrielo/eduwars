@@ -1,18 +1,22 @@
-import { useRecoilState } from 'recoil';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { currentDayAtom, INITIAL_DAY } from '@/atoms/currentDayAtom';
 import {
   INITIAL_KNOWLEDGE_CURRENT,
   INITIAL_KNOWLEDGE_MAX,
   knowledgeStateAtom,
 } from '@/atoms/knowledgeStateAtom';
-import { overworldStateAtom } from '@/atoms/overworldStateAtom';
+import {
+  overworldActiveUISelector,
+  overworldStateAtom,
+} from '@/atoms/overworldStateAtom';
 
 export default function BattleDefeatScreen() {
-  const [overworldState, setOverworldState] = useRecoilState(overworldStateAtom);
-  const [, setCurrentDay] = useRecoilState(currentDayAtom);
-  const [, setKnowledge] = useRecoilState(knowledgeStateAtom);
+  const activeUI = useRecoilValue(overworldActiveUISelector);
+  const setOverworldState = useSetRecoilState(overworldStateAtom);
+  const setCurrentDay = useSetRecoilState(currentDayAtom);
+  const setKnowledge = useSetRecoilState(knowledgeStateAtom);
 
-  if (overworldState.activeUI !== 'BATTLE_DEFEAT') return null;
+  if (activeUI !== 'BATTLE_DEFEAT') return null;
 
   const restartGame = () => {
     window.dispatchEvent(new CustomEvent('BATTLE_RESTART'));

@@ -1,5 +1,6 @@
 import Sprite from '@/components/object-graphics/Sprite';
 import { CELL_SIZE } from '@/utils/consts';
+import { memo } from 'react';
 
 interface Props {
   frameCoordinate: string;
@@ -7,7 +8,7 @@ interface Props {
   y: number;
 }
 
-export default function MapCell({ x, y, frameCoordinate }: Props) {
+function MapCell({ x, y, frameCoordinate }: Props) {
   return (
     <div
       style={{
@@ -20,3 +21,5 @@ export default function MapCell({ x, y, frameCoordinate }: Props) {
     </div>
   );
 }
+
+export default memo(MapCell);

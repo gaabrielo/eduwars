@@ -15,13 +15,13 @@ function Sprite({ frameCoordinate, size = 16, showInteractionPrompt }: Props) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {
-    if (!canvasRef) return;
+    if (!canvasRef.current || !spriteSheetImage) return;
 
-    const canvasEl = canvasRef.current!;
+    const canvasEl = canvasRef.current;
     const ctx = canvasEl.getContext('2d')!;
 
     // Clear out anything in the canvas tag
-    if (canvasEl) ctx.clearRect(0, 0, canvasEl.width, canvasEl.height);
+    ctx.clearRect(0, 0, canvasEl.width, canvasEl.height);
 
     const tileSheetX = Number(frameCoordinate.split('x')[0]);
     const tileSheetY = Number(frameCoordinate.split('x')[1]);
@@ -37,7 +37,7 @@ function Sprite({ frameCoordinate, size = 16, showInteractionPrompt }: Props) {
       size,
       size
     );
-  }, [frameCoordinate]);
+  }, [frameCoordinate, size, spriteSheetImage]);
 
   return (
     <div style={{ position: 'relative', width: size, height: size }}>

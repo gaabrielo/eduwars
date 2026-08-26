@@ -1,13 +1,17 @@
-import { useRecoilState } from 'recoil';
-import { overworldStateAtom } from '@/atoms/overworldStateAtom';
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
+import {
+  overworldActiveUISelector,
+  overworldStateAtom,
+} from '@/atoms/overworldStateAtom';
 import { currentCharacterNameAtom } from '@/atoms/currentCharacterNameAtom';
 import { CHARACTERS } from '@/utils/consts';
 
 export default function SkinSelectionScreen() {
-  const [overworldState, setOverworldState] = useRecoilState(overworldStateAtom);
+  const activeUI = useRecoilValue(overworldActiveUISelector);
+  const setOverworldState = useSetRecoilState(overworldStateAtom);
   const [characterName, setCharacterName] = useRecoilState(currentCharacterNameAtom);
 
-  if (overworldState.activeUI !== 'SKIN_SELECTION') return null;
+  if (activeUI !== 'SKIN_SELECTION') return null;
 
   const handleSelectSkin = (skin: string) => {
     setCharacterName(skin);
