@@ -22,7 +22,10 @@ import BattleDefeatScreen from '@/components/hud/BattleDefeatScreen';
 import SkinSelectionScreen from '@/components/hud/SkinSelectionScreen';
 import DialogueScreen from '@/components/hud/DialogueScreen';
 import { useGameProgress } from '@/contexts/GameProgressContext';
-import { selectDialogueVariant } from '@/services/dialogue';
+import {
+  getNPCDefinition,
+  selectDialogueVariant,
+} from '@/services/dialogue';
 import { BattleSnapshot, HeroPosition } from '@/types/gameProgress';
 
 export default function RenderLevel() {
@@ -100,20 +103,21 @@ export default function RenderLevel() {
     window.addEventListener('OVERWORLD_UI_TOGGLE', handleOverworldAction);
 
     const handleNPCInteraction = (event: Event) => {
-      const { npcId, dialogueId } = (event as CustomEvent<{
+      const { npcId } = (event as CustomEvent<{
         npcId: string;
-        dialogueId: string;
       }>).detail;
-      const variant = selectDialogueVariant(dialogueId, {
+      const npc = getNPCDefinition(npcId);
+      const variant = selectDialogueVariant(npcId, {
         currentDay: currentDayRef.current,
         knowledge: knowledgeRef.current,
         dialogueFlags: overworldStateRef.current.dialogueFlags,
       });
 
-      if (!variant) return;
+      if (!npc || !variant) return;
 
       setDialogueState({
         npcId,
+        npcName: npc.name,
         variantId: variant.id,
         lines: variant.lines,
         currentLineIndex: 0,
@@ -132,6 +136,7 @@ export default function RenderLevel() {
 
       setDialogueState({
         npcId: 'system',
+        npcName: 'Aviso',
         variantId: 'battle-locked-lesson',
         lines: [
           {

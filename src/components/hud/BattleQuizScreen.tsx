@@ -11,6 +11,21 @@ import { useState, useEffect, useRef } from "react";
 import Sprite from "@/components/object-graphics/Sprite";
 import { TILES } from "@/utils/tiles";
 
+const ENEMY_IDLE_FRAMES_BY_BASE_FRAME: Record<string, readonly [string, string]> = {
+  [TILES.HERO_LEFT]: [TILES.HERO_LEFT, TILES.HERO_RUN_1_LEFT],
+  [TILES.HERO_RIGHT]: [TILES.HERO_RIGHT, TILES.HERO_RUN_1_RIGHT],
+  [TILES.ENGINEER_LEFT]: [TILES.ENGINEER_LEFT, TILES.ENGINEER_RUN_1_LEFT],
+  [TILES.ENGINEER_RIGHT]: [TILES.ENGINEER_RIGHT, TILES.ENGINEER_RUN_1_RIGHT],
+  [TILES.CLERIC_LEFT]: [TILES.CLERIC_LEFT, TILES.CLERIC_RUN_1_LEFT],
+  [TILES.CLERIC_RIGHT]: [TILES.CLERIC_RIGHT, TILES.CLERIC_RUN_1_RIGHT],
+  [TILES.ROGUE_LEFT]: [TILES.ROGUE_LEFT, TILES.ROGUE_RUN_1_LEFT],
+  [TILES.ROGUE_RIGHT]: [TILES.ROGUE_RIGHT, TILES.ROGUE_RUN_1_RIGHT],
+};
+
+const getIdleFrames = (frameCoordinate: string) => {
+  return ENEMY_IDLE_FRAMES_BY_BASE_FRAME[frameCoordinate] || [frameCoordinate];
+};
+
 export default function BattleQuizScreen() {
   const activeUI = useRecoilValue(overworldActiveUISelector);
   const battleEnemy = useRecoilValue(overworldBattleEnemySelector);
@@ -50,17 +65,11 @@ export default function BattleQuizScreen() {
     return (
       <div className="absolute inset-0 bg-black/80 flex flex-col items-center justify-center z-50">
         <div className="bg-white p-6 rounded-lg shadow-xl w-3/4 max-w-2xl text-center">
-          <h2 className="text-2xl font-bold mb-4 text-green-600">
-            Curso concluído!
-          </h2>
-          <p className="mb-6 text-gray-700">
-            Você concluiu todas as aulas disponíveis de Python.
-          </p>
+          <h2 className="text-2xl font-bold mb-4 text-green-600">Curso concluído!</h2>
+          <p className="mb-6 text-gray-700">Você concluiu todas as aulas disponíveis de Python.</p>
           <button
             className="text-gray-500 hover:text-gray-700 underline text-sm"
-            onClick={() =>
-              setOverworldState((prev) => ({ ...prev, activeUI: null }))
-            }
+            onClick={() => setOverworldState((prev) => ({ ...prev, activeUI: null }))}
           >
             Voltar ao mapa
           </button>
@@ -72,6 +81,7 @@ export default function BattleQuizScreen() {
   const currentQuestionNumber = currentQuestionIndex + 1;
   const specialCharge = currentQuestionIndex % 3; // 0, 1, 2 (2 is max/special)
   const isSpecialAttack = specialCharge === 2;
+  const enemyIdleFrames = getIdleFrames(battleEnemy?.spriteFrame || TILES.ROGUE_LEFT);
 
   const handleAnswer = (selectedIndex: number) => {
     if (showFeedback || battleFinishedRef.current) return; // Ignore clicks during feedback
@@ -102,9 +112,7 @@ export default function BattleQuizScreen() {
       const knowledgeDamage = isSpecialAttack ? 2 : 1;
       const newKnowledge = Math.max(0, knowledge.current - knowledgeDamage);
 
-      setShowFeedback(
-        `Incorreto! Cuidado, o NPC revidou tirando ${knowledgeDamage} Conhecimento!`,
-      );
+      setShowFeedback(`Incorreto! Cuidado, o NPC revidou tirando ${knowledgeDamage} Conhecimento!`);
 
       setKnowledge((prev) => ({
         ...prev,
@@ -200,10 +208,17 @@ export default function BattleQuizScreen() {
             className="relative w-28 h-28 bg-gray-100 border-4 border-gray-300 rounded-xl overflow-hidden flex items-center justify-center animate-enemy-hit"
           >
             <div className="scale-[2.25] -translate-y-[16px]">
-              <Sprite
-                frameCoordinate={battleEnemy?.spriteFrame || TILES.ROGUE_LEFT}
-                size={32}
-              />
+              <div className="relative h-8 w-8">
+                <div className="absolute inset-0 animate-enemy-idle-base">
+                  <Sprite frameCoordinate={enemyIdleFrames[0]} size={32} />
+                </div>
+
+                {enemyIdleFrames[1] && (
+                  <div className="absolute inset-0 animate-enemy-idle-one">
+                    <Sprite frameCoordinate={enemyIdleFrames[1]} size={32} />
+                  </div>
+                )}
+              </div>
             </div>
 
             {damagePop && (
@@ -221,8 +236,7 @@ export default function BattleQuizScreen() {
         {/* Header and Special Attack Warning */}
         {isSpecialAttack && (
           <div className="bg-orange-100 text-orange-800 p-2 rounded mb-4 font-bold animate-pulse">
-            ⚠️ CUIDADO: O NPC carregou um ataque especial! Errar tirará 2 de
-            conhecimento!
+            ⚠️ CUIDADO: O NPC carregou um ataque especial! Errar tirará 2 de conhecimento!
           </div>
         )}
 
@@ -298,9 +312,7 @@ export default function BattleQuizScreen() {
             )}
           </div>
         ) : (
-          <div className="text-green-600 text-xl font-bold py-8">
-            NPC derrotado!
-          </div>
+          <div className="text-green-600 text-xl font-bold py-8">NPC derrotado!</div>
         )}
       </div>
     </div>

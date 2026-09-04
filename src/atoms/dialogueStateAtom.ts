@@ -3,6 +3,7 @@ import { DialogueLine } from '@/utils/types';
 
 export interface ActiveDialogue {
   npcId: string;
+  npcName: string;
   variantId: string;
   lines: DialogueLine[];
   currentLineIndex: number;

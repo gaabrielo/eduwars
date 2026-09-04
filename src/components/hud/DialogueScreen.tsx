@@ -38,14 +38,22 @@ export default function DialogueScreen() {
   return (
     <div className="absolute inset-0 z-50 flex items-end justify-center bg-black/30 p-6">
       <div className="w-full max-w-3xl rounded-lg border-4 border-slate-800 bg-white p-5 shadow-xl">
-        <p className="mb-2 text-lg font-bold text-blue-700">{line.speaker}</p>
+        <p className="mb-2 text-lg font-bold text-blue-700">
+          {line.speaker ?? dialogue.npcName}
+        </p>
         <p className="min-h-16 text-lg text-slate-800">{line.text}</p>
         <div className="mt-4 flex justify-end">
           <button
             className="rounded bg-blue-600 px-5 py-2 font-bold text-white transition-colors hover:bg-blue-700"
             onClick={advanceDialogue}
           >
-            {isLastLine ? 'Fechar' : 'Continuar'}
+            {isLastLine ? (
+              'Fechar'
+            ) : (
+              <>
+                Continuar <span aria-hidden="true">→</span>
+              </>
+            )}
           </button>
         </div>
       </div>

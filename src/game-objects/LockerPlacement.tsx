@@ -1,5 +1,5 @@
-import React from 'react';
-import { Placement } from '@/game-objects/Placement';
+import React from "react";
+import { Placement } from "@/game-objects/Placement";
 
 export class LockerPlacement extends Placement {
   isHeroNear: boolean;
@@ -13,16 +13,16 @@ export class LockerPlacement extends Placement {
 
     this.handleKeyDown = (e: KeyboardEvent) => {
       if (
-        e.key.toLowerCase() === 'e' &&
+        e.key.toLowerCase() === "e" &&
         this.isHeroNear &&
         !(this.level as any).isBattleMode
       ) {
         this.interact();
       }
     };
-    
+
     // Using document listener to match direction controls approach
-    document.addEventListener('keydown', this.handleKeyDown);
+    document.addEventListener("keydown", this.handleKeyDown);
   }
 
   isSolidForBody(_body: any) {
@@ -34,7 +34,7 @@ export class LockerPlacement extends Placement {
     if (hero) {
       const inXRange = hero.x >= this.x - 1 && hero.x <= this.x + this.width;
       const inYRange = hero.y >= this.y - 1 && hero.y <= this.y + this.height;
-      
+
       const isInside =
         hero.x >= this.x &&
         hero.x < this.x + this.width &&
@@ -43,7 +43,7 @@ export class LockerPlacement extends Placement {
 
       // Hero is adjacent if they are within the extended bounding box but not inside the solid core
       const isNear = inXRange && inYRange && !isInside;
-      
+
       if (this.isHeroNear !== isNear) {
         this.isHeroNear = isNear;
       }
@@ -51,45 +51,49 @@ export class LockerPlacement extends Placement {
   }
 
   interact() {
-    console.log('Interacting with Locker! Opening Skin Selection...');
+    console.log("Interacting with Locker! Opening Skin Selection...");
     window.dispatchEvent(
-      new CustomEvent('OVERWORLD_UI_TOGGLE', {
-        detail: 'SKIN_SELECTION',
-      })
+      new CustomEvent("OVERWORLD_UI_TOGGLE", {
+        detail: "SKIN_SELECTION",
+      }),
     );
   }
 
   // Not strictly part of Placement base class but good for cleanup
   destroy() {
-    document.removeEventListener('keydown', this.handleKeyDown);
+    document.removeEventListener("keydown", this.handleKeyDown);
   }
 
   renderComponent() {
     return (
-      <div style={{ position: 'relative', width: this.width * 16, height: this.height * 16 }}>
+      <div
+        style={{
+          position: "relative",
+          width: this.width * 16,
+          height: this.height * 16,
+        }}
+      >
         {this.isHeroNear && (
           <div
             style={{
-              position: 'absolute',
-              top: -4,
-              left: '50%',
-              transform: 'translateX(-50%)',
-              backgroundColor: 'white',
-              color: 'black',
-              border: '1px solid black',
-              borderRadius: 2,
-              padding: '4px 2px 3px 2px',
-              lineHeight: 0,
-              fontSize: 4,
-              fontWeight: 'bold',
+              position: "absolute",
+              top: -12,
+              left: "50%",
+              transform: "translateX(-50%)",
+              backgroundColor: "white",
+              color: "black",
+              border: "1px solid black",
+              borderRadius: 4,
+              padding: "2.5px 4px 2px 4px",
+              fontSize: 8,
+              fontWeight: "bold",
               zIndex: 100,
-              pointerEvents: 'none',
-              boxShadow: '0 1px 2px rgba(0,0,0,0.5)',
-              whiteSpace: 'nowrap',
+              pointerEvents: "none",
+              boxShadow: "0 1px 2px rgba(0,0,0,0.5)",
+              lineHeight: "8px",
             }}
           >
-            <span>Pressione </span>
-            <span style={{ color: 'red' }}>E</span>
+            E
           </div>
         )}
       </div>

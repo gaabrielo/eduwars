@@ -10,7 +10,6 @@ type RuntimeLevel = LevelProps & {
 
 export class NPCPlacement extends Placement {
   npcId: string;
-  dialogueId: string;
   spriteFrame: string;
   isHeroNear: boolean;
   handleKeyDown: (event: KeyboardEvent) => void;
@@ -18,7 +17,6 @@ export class NPCPlacement extends Placement {
   constructor(properties: NPCPlacementConfig, level: RuntimeLevel) {
     super(properties as PlacementProperties, level);
     this.npcId = properties.npcId;
-    this.dialogueId = properties.dialogueId;
     this.spriteFrame = properties.spriteFrame;
     this.isHeroNear = false;
 
@@ -52,7 +50,7 @@ export class NPCPlacement extends Placement {
   interact(): void {
     window.dispatchEvent(
       new CustomEvent('NPC_INTERACTION', {
-        detail: { npcId: this.npcId, dialogueId: this.dialogueId },
+        detail: { npcId: this.npcId },
       })
     );
   }

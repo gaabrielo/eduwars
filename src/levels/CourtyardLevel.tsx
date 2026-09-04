@@ -102,8 +102,7 @@ const level = {
       x: 16,
       y: 8,
       type: PLACEMENT_TYPE_NPC,
-      npcId: 'mentor-python',
-      dialogueId: 'mentor-python-main',
+      npcId: 'professor-python',
       spriteFrame: TILES.ROGUE_LEFT,
     },
     // We will add more placements later (e.g. Wardrobe, NPCs, Classrooms)

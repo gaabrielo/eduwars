@@ -1,6 +1,6 @@
 import { GameProgress } from '@/types/gameProgress';
-import { DialogueVariant, NPCDialogueDefinition } from '@/utils/types';
-import { NPC_DIALOGUES } from '@/data/dialogues';
+import { DialogueVariant, NPCDefinition } from '@/utils/types';
+import { NPC_DEFINITIONS } from '@/data/dialogues';
 
 function matchesVariant(
   variant: DialogueVariant,
@@ -20,17 +20,26 @@ function matchesVariant(
   );
 }
 
-export function getDialogueDefinition(
-  dialogueId: string
-): NPCDialogueDefinition | undefined {
-  return NPC_DIALOGUES.find((dialogue) => dialogue.id === dialogueId);
+export function getNPCDefinition(npcId: string): NPCDefinition | undefined {
+  return NPC_DEFINITIONS.find((npc) => npc.id === npcId);
 }
 
 export function selectDialogueVariant(
-  dialogueId: string,
+  npcId: string,
   progress: Pick<GameProgress, 'currentDay' | 'knowledge' | 'dialogueFlags'>
 ): DialogueVariant | undefined {
-  return getDialogueDefinition(dialogueId)?.variants
+  const variants = getNPCDefinition(npcId)?.dialogues.filter(
+    (variant) => variant.lines.length > 0
+  );
+
+  if (!variants?.length) return undefined;
+
+  const matchingVariant = variants
     .filter((variant) => matchesVariant(variant, progress))
     .sort((first, second) => second.priority - first.priority)[0];
+
+  return (
+    matchingVariant ??
+    variants.sort((first, second) => first.priority - second.priority)[0]
+  );
 }

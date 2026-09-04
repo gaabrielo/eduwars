@@ -44,7 +44,6 @@ const level = {
       y: 2,
       type: PLACEMENT_TYPE_CLASSROOM,
       npcId: 'professor-python',
-      dialogueId: 'mentor-python-main',
       spriteFrame: TILES.ROGUE_RIGHT,
     },
   ],

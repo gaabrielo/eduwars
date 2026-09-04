@@ -49,7 +49,6 @@ export interface PlacementConfigProps {
 
 export interface NPCPlacementConfig extends PlacementConfigProps {
   npcId: string;
-  dialogueId: string;
   spriteFrame: string;
 }
 
@@ -67,7 +66,7 @@ export interface BattleEnemyConfig {
 }
 
 export interface DialogueLine {
-  speaker: string;
+  speaker?: string;
   text: string;
 }
 
@@ -84,7 +83,10 @@ export interface DialogueVariant {
   setFlags?: string[];
 }
 
-export interface NPCDialogueDefinition {
+export interface NPCDefinition {
   id: string;
-  variants: DialogueVariant[];
+  name: string;
+  personality: string;
+  backstory: string;
+  dialogues: DialogueVariant[];
 }
