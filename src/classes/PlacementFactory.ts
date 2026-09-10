@@ -11,6 +11,7 @@ import { NPCPlacement } from '@/game-objects/NPCPlacement';
 import { TeleportPlacement } from '@/game-objects/TeleportPlacement';
 import { HeroPlacement } from '@/game-objects/HeroPlacement';
 import { LockerPlacement } from '@/game-objects/LockerPlacement';
+import { TallSpritePlacement } from '@/game-objects/TallSpritePlacement';
 import {
   PLACEMENT_TYPE_BATTLE_FRAME,
   PLACEMENT_TYPE_ENERGY_DRINK,
@@ -25,6 +26,7 @@ import {
   PLACEMENT_TYPE_TELEPORT,
   PLACEMENT_TYPE_INVISIBLE_WALL,
   PLACEMENT_TYPE_LOCKER,
+  PLACEMENT_TYPE_TALL_SPRITE,
 } from '@/utils/consts';
 
 class PlacementFactory {
@@ -63,6 +65,8 @@ class PlacementFactory {
         return new TeleportPlacement(config, level);
       case PLACEMENT_TYPE_LOCKER:
         return new LockerPlacement(config, level);
+      case PLACEMENT_TYPE_TALL_SPRITE:
+        return new TallSpritePlacement(config, level);
 
       default:
         console.warn('NO TYPE FOUND', config.type);

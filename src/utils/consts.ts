@@ -1,4 +1,4 @@
-export const DEBUG_MODE = false;
+export const DEBUG_MODE = true;
 
 export const CELL_SIZE = 16;
 export const Z_INDEX_LAYER_SIZE = 10;
@@ -17,6 +17,7 @@ export const PLACEMENT_TYPE_NPC = "NPC";
 export const PLACEMENT_TYPE_TELEPORT = "TELEPORT";
 export const PLACEMENT_TYPE_INVISIBLE_WALL = "INVISIBLE_WALL";
 export const PLACEMENT_TYPE_LOCKER = "LOCKER";
+export const PLACEMENT_TYPE_TALL_SPRITE = "TALL_SPRITE";
 
 export const DIRECTION_LEFT = "LEFT";
 export const DIRECTION_RIGHT = "RIGHT";

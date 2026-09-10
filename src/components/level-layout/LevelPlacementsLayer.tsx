@@ -12,7 +12,7 @@ export default function LevelPlacementsLayer({ level }: LevelProps) {
       const style: CSSProperties = {
         position: 'absolute',
         top: 0,
-        bottom: 0,
+        left: 0,
         transform: `translate3d(${x}px, ${y}px, 0)`,
         WebkitTransform: `translate3d(${x}px, ${y}px, 0)`,
         msTransform: `translate3d(${x}px, ${y}px, 0)`,

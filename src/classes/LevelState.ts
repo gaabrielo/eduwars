@@ -263,10 +263,10 @@ export class LevelState {
 
   isPositionOutOfBounds(x: number, y: number) {
     return (
-      x === 0 ||
-      y === 0 ||
-      x >= this.tilesWidth! + 1 ||
-      y >= this.tilesHeight! + 1
+      x < 0 ||
+      y < 0 ||
+      x >= this.tilesWidth! ||
+      y >= this.tilesHeight!
     );
   }
 

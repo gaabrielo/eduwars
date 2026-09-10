@@ -1,0 +1,123 @@
+import {
+  LEVEL_THEMES,
+  PLACEMENT_TYPE_HERO,
+  PLACEMENT_TYPE_BATTLE_FRAME,
+  PLACEMENT_TYPE_TELEPORT,
+  PLACEMENT_TYPE_TALL_SPRITE,
+  DIRECTION_LEFT,
+} from "@/utils/consts";
+import { TILES } from "@/utils/tiles";
+
+const level = {
+  theme: LEVEL_THEMES.BLUE,
+  tilesWidth: 18,
+  tilesHeight: 16,
+  backgroundImage: "/levels/campus-entrance/campus-entrance.png",
+  collisionGrid: [
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1],
+    [1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1],
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+  ],
+  placements: [
+    {
+      id: 0,
+      x: 5,
+      y: 5,
+      type: PLACEMENT_TYPE_HERO,
+    },
+    {
+      id: 1,
+      x: 0,
+      y: 8,
+      type: PLACEMENT_TYPE_TELEPORT,
+      targetMapId: "CourtyardLevel",
+      targetX: 30,
+      targetY: 6,
+      direction: DIRECTION_LEFT,
+    },
+    {
+      id: 2,
+      x: 17,
+      y: 12,
+      type: PLACEMENT_TYPE_TELEPORT,
+      targetMapId: "RestaurantEntranceLevel",
+      targetX: 1,
+      targetY: 7,
+    },
+    {
+      id: 3,
+      x: 3,
+      y: 3,
+      type: PLACEMENT_TYPE_BATTLE_FRAME,
+      width: 2,
+      height: 2,
+      day: 3,
+      battleId: "entrance-python-day-3",
+      enemy: {
+        name: "Professor Python",
+        spriteFrame: TILES.ROGUE_LEFT,
+        entry: { x: 7, y: 3 },
+        target: { x: 6, y: 3 },
+      },
+    },
+    {
+      id: 4,
+      x: 0,
+      y: 0,
+      type: PLACEMENT_TYPE_TALL_SPRITE,
+      spriteImage: "/levels/campus-entrance/campus-entrance-top-left-tree.png",
+      fadeCells: [
+        { x: 6, y: 8 },
+        { x: 5, y: 8 },
+      ],
+    },
+    {
+      id: 5,
+      x: 0,
+      y: 0,
+      type: PLACEMENT_TYPE_TALL_SPRITE,
+      spriteImage: "/levels/campus-entrance/campus-entrance-top-right-tree.png",
+      fadeCells: [
+        { x: 11, y: 8 },
+        { x: 12, y: 8 },
+      ],
+    },
+    // {
+    //   id: 5,
+    //   x: 0,
+    //   y: 0,
+    //   type: PLACEMENT_TYPE_TALL_SPRITE,
+    //   spriteImage: "/levels/campus-entrance/campus-entrance-bottom-left-tree.png",
+    //   fadeCells: [
+    //     { x: 6, y: 11 },
+    //     { x: 5, y: 12 },
+    //   ],
+    // },
+    // {
+    //   id: 5,
+    //   x: 0,
+    //   y: 0,
+    //   type: PLACEMENT_TYPE_TALL_SPRITE,
+    //   spriteImage: "/levels/campus-entrance/campus-entrance-bottom-right-tree.png",
+    //   fadeCells: [
+    //     { x: 6, y: 8 },
+    //     { x: 5, y: 8 },
+    //   ],
+    // },
+  ],
+};
+
+export default level;

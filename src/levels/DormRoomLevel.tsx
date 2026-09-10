@@ -6,7 +6,7 @@ import {
   PLACEMENT_TYPE_WALL,
   PLACEMENT_TYPE_LOCKER,
 } from "@/utils/consts";
-import { TILES } from '@/utils/tiles';
+import { TILES } from "@/utils/tiles";
 
 const level = {
   theme: LEVEL_THEMES.BLUE,
@@ -38,8 +38,8 @@ const level = {
       y: 6,
       type: PLACEMENT_TYPE_TELEPORT,
       targetMapId: "CourtyardLevel",
-      targetX: 4,
-      targetY: 5,
+      targetX: 9,
+      targetY: 6,
     },
     // We will add more placements later (e.g. Wardrobe, NPCs, Classrooms)
     // Add some boundary walls to test collision on the edges
@@ -57,9 +57,9 @@ const level = {
       width: 2,
       height: 2,
       day: 4,
-      battleId: 'dorm-python-day-4',
+      battleId: "dorm-python-day-4",
       enemy: {
-        name: 'Professor Python',
+        name: "Professor Python",
         spriteFrame: TILES.ROGUE_LEFT,
         entry: { x: 6, y: 4 },
         target: { x: 5, y: 4 },
