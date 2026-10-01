@@ -1,4 +1,5 @@
 import { atom, selector } from 'recoil';
+import type { BattleSummary } from '@/types/diary';
 
 export interface BattleEnemyState {
   fieldId: string;
@@ -14,10 +15,14 @@ export interface OverworldState {
     | 'DIALOGUE'
     | 'NPC_BATTLE'
     | 'BATTLE_DEFEAT'
+    | 'BATTLE_SUMMARY'
+    | 'DIARY'
     | 'WARDROBE'
     | 'SKIN_SELECTION'
     | null;
   battleEnemy: BattleEnemyState | null;
+  /** Post-battle victory report shown once; not persisted. */
+  battleSummary: BattleSummary | null;
   completedBattleIds: string[];
   watchedLessonDays: number[];
   heroPositionByLevel: Record<
@@ -38,10 +43,13 @@ export const overworldStateAtom = atom<OverworldState>({
       | 'DIALOGUE'
       | 'NPC_BATTLE'
       | 'BATTLE_DEFEAT'
+      | 'BATTLE_SUMMARY'
+      | 'DIARY'
       | 'WARDROBE'
       | 'SKIN_SELECTION'
       | null,
     battleEnemy: null as BattleEnemyState | null,
+    battleSummary: null as BattleSummary | null,
     completedBattleIds: [] as string[],
     watchedLessonDays: [] as number[],
     heroPositionByLevel: {},

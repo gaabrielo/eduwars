@@ -187,6 +187,23 @@ canvas,
   src: url('/fonts/Llawysgrifen.ttf') format('truetype');
 }
 
+/* Handwritten "crossed off" strike used by the knowledge diary's progress
+   statuses; animates the pen stroke from hidden to drawn (pathLength=1). */
+@keyframes diary-strike-draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .diary-strike path {
+    animation: none !important;
+  }
+}
+
 /* @layer base {
   * {
     @apply border-border;

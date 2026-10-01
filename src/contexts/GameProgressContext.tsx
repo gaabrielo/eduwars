@@ -15,6 +15,13 @@ import { currentLevelIdAtom } from '@/atoms/currentLevelIdAtom';
 import { knowledgeStateAtom } from '@/atoms/knowledgeStateAtom';
 import { overworldStateAtom } from '@/atoms/overworldStateAtom';
 import type { OverworldState } from '@/atoms/overworldStateAtom';
+import { diaryAtom } from '@/atoms/diaryAtom';
+import type { DiaryState } from '@/types/diary';
+import type { DiaryAttempt } from '@/types/diary';
+import {
+  applyDiaryAttempt,
+  clearDiary,
+} from '@/services/diary';
 import {
   clearGameProgress,
   loadGameProgress,
@@ -38,6 +45,7 @@ interface GameProgressContextValue {
   markPlacementCollected: (levelId: string, placementId: number) => void;
   addDialogueFlag: (flag: string) => void;
   markLessonWatched: (day: number) => void;
+  recordDiaryResult: (attempt: DiaryAttempt) => void;
   resetProgress: () => void;
 }
 
@@ -50,7 +58,8 @@ function buildProgress(
   currentDay: number,
   knowledge: GameProgress['knowledge'],
   characterName: string,
-  overworldState: OverworldState
+  overworldState: OverworldState,
+  diary: DiaryState
 ): GameProgress {
   return {
     version: 1,
@@ -64,6 +73,7 @@ function buildProgress(
     collectedPlacementIdsByLevel:
       overworldState.collectedPlacementIdsByLevel,
     dialogueFlags: overworldState.dialogueFlags,
+    diary,
     savedAt: new Date().toISOString(),
   };
 }
@@ -81,18 +91,21 @@ export function GameProgressProvider({
     currentCharacterNameAtom
   );
   const [overworldState, setOverworldState] = useRecoilState(overworldStateAtom);
+  const [diary, setDiary] = useRecoilState(diaryAtom);
 
   const currentDayRef = useRef(currentDay);
   const knowledgeRef = useRef(knowledge);
   const currentLevelIdRef = useRef(currentLevelId);
   const characterNameRef = useRef(characterName);
   const overworldStateRef = useRef(overworldState);
+  const diaryRef = useRef(diary);
 
   currentDayRef.current = currentDay;
   knowledgeRef.current = knowledge;
   currentLevelIdRef.current = currentLevelId;
   characterNameRef.current = characterName;
   overworldStateRef.current = overworldState;
+  diaryRef.current = diary;
 
   useEffect(() => {
     const savedProgress = loadGameProgress();
@@ -108,6 +121,7 @@ export function GameProgressProvider({
       collectedPlacementIdsByLevel:
         savedProgress.collectedPlacementIdsByLevel,
       dialogueFlags: savedProgress.dialogueFlags,
+      diary: savedProgress.diary,
       activeUI: null,
       battleEnemy: null,
     }));
@@ -116,6 +130,7 @@ export function GameProgressProvider({
     setCharacterName,
     setCurrentDay,
     setCurrentLevelId,
+    setDiary,
     setKnowledge,
     setOverworldState,
   ]);
@@ -130,7 +145,8 @@ export function GameProgressProvider({
           currentDay,
           knowledge,
           characterName,
-          overworldState
+          overworldState,
+          diary
         )
       );
     }, 150);
@@ -140,6 +156,7 @@ export function GameProgressProvider({
     characterName,
     currentDay,
     currentLevelId,
+    diary,
     isHydrated,
     knowledge,
     overworldState,
@@ -154,7 +171,8 @@ export function GameProgressProvider({
         currentDayRef.current,
         knowledgeRef.current,
         characterNameRef.current,
-        overworldStateRef.current
+        overworldStateRef.current,
+        diaryRef.current
       )
     );
   }, []);
@@ -214,6 +232,8 @@ export function GameProgressProvider({
       version: 1,
       ...snapshot,
       watchedLessonDays: overworldStateRef.current.watchedLessonDays,
+      // A fled battle must not alter the diary; keep whatever is already there.
+      diary: diaryRef.current,
       savedAt: new Date().toISOString(),
     });
   }, [setCharacterName, setCurrentDay, setCurrentLevelId, setKnowledge, setOverworldState]);
@@ -277,6 +297,13 @@ export function GameProgressProvider({
     [setOverworldState]
   );
 
+  const recordDiaryResult = useCallback(
+    (attempt: DiaryAttempt) => {
+      setDiary((previous) => applyDiaryAttempt(previous, attempt));
+    },
+    [setDiary]
+  );
+
   const resetProgress = useCallback(() => {
     const initialProgress = createInitialGameProgress();
     clearGameProgress();
@@ -284,6 +311,7 @@ export function GameProgressProvider({
     setKnowledge(initialProgress.knowledge);
     setCurrentLevelId(initialProgress.currentLevelId);
     setCharacterName(initialProgress.characterName);
+    setDiary(clearDiary());
     setOverworldState((previous) => ({
       ...previous,
       activeUI: null,
@@ -294,7 +322,7 @@ export function GameProgressProvider({
       watchedLessonDays: [],
       dialogueFlags: [],
     }));
-  }, [setCharacterName, setCurrentDay, setCurrentLevelId, setKnowledge, setOverworldState]);
+  }, [setCharacterName, setCurrentDay, setCurrentLevelId, setDiary, setKnowledge, setOverworldState]);
 
   const contextValue = useMemo(
     () => ({
@@ -305,6 +333,7 @@ export function GameProgressProvider({
       markPlacementCollected,
       addDialogueFlag,
       markLessonWatched,
+      recordDiaryResult,
       resetProgress,
     }),
     [
@@ -312,6 +341,7 @@ export function GameProgressProvider({
       captureBattleSnapshot,
       markPlacementCollected,
       markLessonWatched,
+      recordDiaryResult,
       resetProgress,
       restoreBattleSnapshot,
       saveNow,

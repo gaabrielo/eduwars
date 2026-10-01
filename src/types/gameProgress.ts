@@ -4,6 +4,8 @@ import {
   INITIAL_KNOWLEDGE_MAX,
 } from '@/atoms/knowledgeStateAtom';
 import type { HeroPosition } from '@/utils/types';
+import type { DiaryState } from '@/types/diary';
+import { createEmptyDiary } from '@/types/diary';
 
 export type { HeroPosition } from '@/utils/types';
 
@@ -21,12 +23,14 @@ export interface GameProgress {
   watchedLessonDays: number[];
   collectedPlacementIdsByLevel: Record<string, number[]>;
   dialogueFlags: string[];
+  /** History recorded by the Knowledge Diary (attempts, concepts to review). */
+  diary: DiaryState;
   savedAt: string;
 }
 
 export type BattleSnapshot = Omit<
   GameProgress,
-  'version' | 'savedAt' | 'watchedLessonDays'
+  'version' | 'savedAt' | 'watchedLessonDays' | 'diary'
 >;
 
 export function createInitialGameProgress(): GameProgress {
@@ -44,6 +48,7 @@ export function createInitialGameProgress(): GameProgress {
     watchedLessonDays: [],
     collectedPlacementIdsByLevel: {},
     dialogueFlags: [],
+    diary: createEmptyDiary(),
     savedAt: new Date().toISOString(),
   };
 }

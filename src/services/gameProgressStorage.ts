@@ -3,6 +3,13 @@ import {
   GameProgress,
   HeroPosition,
 } from '@/types/gameProgress';
+import type {
+  DiaryConceptMiss,
+  DiaryDayEntry,
+  DiaryDayRecord,
+  DiaryState,
+} from '@/types/diary';
+import { createEmptyDiary } from '@/types/diary';
 
 export const GAME_PROGRESS_STORAGE_KEY = 'eduwars:game-progress:v1';
 
@@ -41,6 +48,66 @@ function isNumberArrayByLevel(
         ids.every((id) => typeof id === 'number' && Number.isFinite(id))
     )
   );
+}
+
+function isDiaryDayRecord(value: unknown): value is DiaryDayRecord {
+  return (
+    isRecord(value) &&
+    typeof value.number === 'number' &&
+    Number.isFinite(value.number) &&
+    (value.outcome === 'VICTORY' || value.outcome === 'DEFEAT') &&
+    typeof value.correctCount === 'number' &&
+    Number.isFinite(value.correctCount) &&
+    typeof value.answeredCount === 'number' &&
+    Number.isFinite(value.answeredCount) &&
+    typeof value.questionTotal === 'number' &&
+    Number.isFinite(value.questionTotal) &&
+    typeof value.knowledgeLost === 'number' &&
+    Number.isFinite(value.knowledgeLost) &&
+    typeof value.savedAt === 'string'
+  );
+}
+
+function isDiaryConceptMiss(value: unknown): value is DiaryConceptMiss {
+  return (
+    isRecord(value) &&
+    typeof value.conceptId === 'string' &&
+    typeof value.misses === 'number' &&
+    Number.isFinite(value.misses)
+  );
+}
+
+function isDiaryDayEntry(value: unknown): value is DiaryDayEntry {
+  if (!isRecord(value) || typeof value.day !== 'number') return false;
+
+  return (
+    Number.isFinite(value.day) &&
+    Array.isArray(value.attempts) &&
+    value.attempts.every((attempt) => isDiaryDayRecord(attempt)) &&
+    (value.best === null || isDiaryDayRecord(value.best)) &&
+    (value.last === null || isDiaryDayRecord(value.last)) &&
+    typeof value.answeredCount === 'number' &&
+    Number.isFinite(value.answeredCount) &&
+    typeof value.correctCount === 'number' &&
+    Number.isFinite(value.correctCount) &&
+    Array.isArray(value.conceptMisses) &&
+    value.conceptMisses.every((miss) => isDiaryConceptMiss(miss)) &&
+    Array.isArray(value.allConceptIds) &&
+    value.allConceptIds.every((id) => typeof id === 'string')
+  );
+}
+
+function getDiary(value: unknown): DiaryState {
+  if (
+    !isRecord(value) ||
+    !Array.isArray(value.days) ||
+    !value.days.every((entry) => isDiaryDayEntry(entry))
+  ) {
+    return createEmptyDiary();
+  }
+
+  // Every entry was already validated field by field by isDiaryDayEntry.
+  return { days: value.days as DiaryDayEntry[] };
 }
 
 function getWatchedLessonDays(value: unknown): number[] {
@@ -89,6 +156,9 @@ export function loadGameProgress(): GameProgress {
     return {
       ...parsedProgress,
       watchedLessonDays: getWatchedLessonDays(parsedProgress.watchedLessonDays),
+      // Older saves predate the diary; each record is validated individually so
+      // a corrupted entry can never break the rest of the progress.
+      diary: getDiary(parsedProgress.diary ?? createEmptyDiary()),
     };
   } catch {
     return createInitialGameProgress();

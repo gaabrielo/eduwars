@@ -1,11 +1,4 @@
-import {
-  LEVEL_THEMES,
-  PLACEMENT_TYPE_HERO,
-  PLACEMENT_TYPE_WALL,
-  PLACEMENT_TYPE_BATTLE_FRAME,
-  PLACEMENT_TYPE_ENERGY_DRINK,
-  CHARACTERS,
-} from '@/utils/consts';
+import { LEVEL_THEMES, PLACEMENT_TYPE_HERO, PLACEMENT_TYPE_WALL, PLACEMENT_TYPE_ENERGY_DRINK } from "@/utils/consts";
 
 const level = {
   theme: LEVEL_THEMES.GRAY,
@@ -26,8 +19,6 @@ const level = {
     { id: 2, x: 4, y: 3, type: PLACEMENT_TYPE_WALL },
     { id: 2, x: 4, y: 2, type: PLACEMENT_TYPE_WALL },
     { id: 3, x: 4, y: 1, type: PLACEMENT_TYPE_WALL },
-
-    { id: 4, x: 19, y: 7, type: PLACEMENT_TYPE_BATTLE_FRAME },
 
     { id: 5, x: 4, y: 8, type: PLACEMENT_TYPE_ENERGY_DRINK },
     { id: 5, x: 8, y: 2, type: PLACEMENT_TYPE_ENERGY_DRINK },

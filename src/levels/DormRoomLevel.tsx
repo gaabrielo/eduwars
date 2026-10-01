@@ -1,9 +1,7 @@
 import {
   LEVEL_THEMES,
   PLACEMENT_TYPE_HERO,
-  PLACEMENT_TYPE_BATTLE_FRAME,
   PLACEMENT_TYPE_TELEPORT,
-  PLACEMENT_TYPE_WALL,
   PLACEMENT_TYPE_LOCKER,
   PLACEMENT_TYPE_TALL_SPRITE,
 } from "@/utils/consts";
@@ -41,22 +39,6 @@ const level = {
       targetMapId: "CourtyardLevel",
       targetX: 9,
       targetY: 6,
-    },
-    {
-      id: 2,
-      x: 4,
-      y: 4,
-      type: PLACEMENT_TYPE_BATTLE_FRAME,
-      width: 2,
-      height: 2,
-      day: 4,
-      battleId: "dorm-python-day-4",
-      enemy: {
-        name: "Professor Python",
-        spriteFrame: TILES.ROGUE_LEFT,
-        entry: { x: 6, y: 4 },
-        target: { x: 5, y: 4 },
-      },
     },
     {
       id: 3,

@@ -10,6 +10,7 @@ import { getBattleQuestionsForDay, getLessonByDay } from "@/data/pythonCourse";
 import { useState, useEffect, useRef } from "react";
 import Sprite from "@/components/object-graphics/Sprite";
 import { TILES } from "@/utils/tiles";
+import type { DiaryBattleOutcome } from "@/types/diary";
 
 const ENEMY_IDLE_FRAMES_BY_BASE_FRAME: Record<string, readonly [string, string]> = {
   [TILES.HERO_LEFT]: [TILES.HERO_LEFT, TILES.HERO_RUN_1_LEFT],
@@ -44,9 +45,17 @@ export default function BattleQuizScreen() {
   const [enemyHitKey, setEnemyHitKey] = useState(0);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const battleFinishedRef = useRef(false);
+  const answeredCountRef = useRef(0);
+  const correctCountRef = useRef(0);
+  const knowledgeLostRef = useRef(0);
+  const missedConceptsRef = useRef<string[]>([]);
 
   useEffect(() => {
     battleFinishedRef.current = false;
+    answeredCountRef.current = 0;
+    correctCountRef.current = 0;
+    knowledgeLostRef.current = 0;
+    missedConceptsRef.current = [];
     setNpcHealth(questions.length);
     setCurrentQuestionIndex(0);
     setShowFeedback(null);
@@ -93,6 +102,13 @@ export default function BattleQuizScreen() {
     const npcDamage = 1;
     const newHealth = Math.max(0, npcHealth - npcDamage);
 
+    answeredCountRef.current += 1;
+    if (isCorrect) {
+      correctCountRef.current += 1;
+    } else {
+      missedConceptsRef.current.push(...(question.concepts ?? []));
+    }
+
     setNpcHealth(newHealth);
     setDamagePop({ key: Date.now(), amount: npcDamage });
     setEnemyHitKey((prev) => prev + 1);
@@ -111,6 +127,7 @@ export default function BattleQuizScreen() {
     } else {
       const knowledgeDamage = isSpecialAttack ? 2 : 1;
       const newKnowledge = Math.max(0, knowledge.current - knowledgeDamage);
+      knowledgeLostRef.current += knowledgeDamage;
 
       setShowFeedback(`Incorreto! Cuidado, o NPC revidou tirando ${knowledgeDamage} Conhecimento!`);
 
@@ -138,6 +155,16 @@ export default function BattleQuizScreen() {
     setCurrentQuestionIndex((prev) => prev + 1);
   };
 
+  const buildBattleAttempt = (outcome: DiaryBattleOutcome) => ({
+    day: currentDay,
+    outcome,
+    correctCount: correctCountRef.current,
+    answeredCount: answeredCountRef.current,
+    questionTotal: questions.length,
+    knowledgeLost: knowledgeLostRef.current,
+    missedConceptIds: [...missedConceptsRef.current],
+  });
+
   const defeatPlayer = () => {
     if (!battleEnemy || battleFinishedRef.current) return;
     battleFinishedRef.current = true;
@@ -148,6 +175,7 @@ export default function BattleQuizScreen() {
           battleId: battleEnemy.fieldId,
           victory: false,
           playerDefeated: true,
+          attempt: buildBattleAttempt("DEFEAT"),
         },
       }),
     );
@@ -163,6 +191,7 @@ export default function BattleQuizScreen() {
           battleId: battleEnemy.fieldId,
           victory,
           playerDefeated: false,
+          attempt: buildBattleAttempt(victory ? "VICTORY" : "DEFEAT"),
         },
       }),
     );

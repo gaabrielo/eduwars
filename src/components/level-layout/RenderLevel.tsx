@@ -19,6 +19,8 @@ import { dialogueStateAtom } from '@/atoms/dialogueStateAtom';
 import ClassroomScreen from '@/components/hud/ClassroomScreen';
 import BattleQuizScreen from '@/components/hud/BattleQuizScreen';
 import BattleDefeatScreen from '@/components/hud/BattleDefeatScreen';
+import BattleSummaryScreen from '@/components/hud/BattleSummaryScreen';
+import KnowledgeDiaryScreen from '@/components/hud/KnowledgeDiaryScreen';
 import SkinSelectionScreen from '@/components/hud/SkinSelectionScreen';
 import DialogueScreen from '@/components/hud/DialogueScreen';
 import { useGameProgress } from '@/contexts/GameProgressContext';
@@ -27,6 +29,8 @@ import {
   selectDialogueVariant,
 } from '@/services/dialogue';
 import { BattleSnapshot, HeroPosition } from '@/types/gameProgress';
+import type { DiaryAttempt } from '@/types/diary';
+import { buildBattleSummary } from '@/services/diary';
 
 export default function RenderLevel() {
   const [level, setLevel] = useState<LevelProps['level'] | null>(null);
@@ -48,6 +52,7 @@ export default function RenderLevel() {
     restoreBattleSnapshot,
     updateHeroPosition,
     markPlacementCollected,
+    recordDiaryResult,
   } = useGameProgress();
 
   currentDayRef.current = currentDay;
@@ -178,11 +183,19 @@ export default function RenderLevel() {
     window.addEventListener('OVERWORLD_TELEPORT', handleTeleport);
 
     const handleBattleFinished = (event: Event) => {
-      const { battleId, victory, playerDefeated } = (event as CustomEvent<{
+      const { battleId, victory, playerDefeated, attempt } = (event as CustomEvent<{
         battleId: string;
         victory: boolean;
         playerDefeated: boolean;
+        attempt?: DiaryAttempt;
       }>).detail;
+
+      if (attempt && (victory || playerDefeated)) {
+        // Victory and defeat are recorded once; fleeing dispatches BATTLE_FLED
+        // instead and is never recorded.
+        recordDiaryResult(attempt);
+      }
+
       if (victory) {
         setCurrentDay((day) => day + 1);
         setKnowledge((previous) => ({
@@ -195,8 +208,13 @@ export default function RenderLevel() {
       battleSnapshotRef.current = null;
       setOverworldState((previous) => ({
         ...previous,
-        activeUI: playerDefeated ? 'BATTLE_DEFEAT' : null,
+        activeUI: playerDefeated
+          ? 'BATTLE_DEFEAT'
+          : victory
+            ? 'BATTLE_SUMMARY'
+            : null,
         battleEnemy: null,
+        battleSummary: victory && attempt ? buildBattleSummary(attempt) : null,
         completedBattleIds:
           victory && !previous.completedBattleIds.includes(battleId)
             ? [...previous.completedBattleIds, battleId]
@@ -248,6 +266,7 @@ export default function RenderLevel() {
     captureBattleSnapshot,
     currentLevelId,
     markPlacementCollected,
+    recordDiaryResult,
     restoreBattleSnapshot,
     setCurrentId,
     setCurrentDay,
@@ -328,6 +347,8 @@ export default function RenderLevel() {
       <ClassroomScreen />
       <BattleQuizScreen />
       <BattleDefeatScreen />
+      <BattleSummaryScreen />
+      <KnowledgeDiaryScreen />
       <SkinSelectionScreen />
       <DialogueScreen />
     </div>

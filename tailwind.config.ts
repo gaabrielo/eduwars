@@ -77,6 +77,7 @@ const config: Config = {
       },
       fontFamily: {
         sans: ["var(--font-sans)", ...fontFamily.sans],
+        handwriting: ["Handwritten", "cursive"],
       },
       keyframes: {
         "accordion-down": {
