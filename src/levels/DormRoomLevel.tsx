@@ -5,6 +5,7 @@ import {
   PLACEMENT_TYPE_TELEPORT,
   PLACEMENT_TYPE_WALL,
   PLACEMENT_TYPE_LOCKER,
+  PLACEMENT_TYPE_TALL_SPRITE,
 } from "@/utils/consts";
 import { TILES } from "@/utils/tiles";
 
@@ -21,8 +22,8 @@ const level = {
     [1, 0, 0, 0, 0, 0, 0, 0, 1, 1],
     [1, 0, 0, 0, 0, 0, 0, 0, 1, 1],
     [1, 1, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 1, 0, 0, 0, 0, 0, 0, 1, 1],
-    [1, 0, 0, 0, 0, 0, 0, 1, 1, 1],
+    [1, 1, 1, 0, 0, 0, 0, 0, 1, 1],
+    [1, 1, 0, 0, 0, 0, 0, 1, 1, 1],
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
   ],
   placements: [
@@ -41,16 +42,8 @@ const level = {
       targetX: 9,
       targetY: 6,
     },
-    // We will add more placements later (e.g. Wardrobe, NPCs, Classrooms)
-    // Add some boundary walls to test collision on the edges
-    // { id: 1, x: 0, y: 0, type: PLACEMENT_TYPE_WALL },
-    // { id: 2, x: 1, y: 0, type: PLACEMENT_TYPE_WALL },
-    // Interactive Overworld Objects
-    { id: 13, x: 12, y: 10, type: "WARDROBE", spriteFrame: "2x0" }, // Decorative/Solid
-    { id: 14, x: 15, y: 12, type: "DECORATIVE", spriteFrame: "3x0" }, // Y-Sorted Tree/Prop
-
     {
-      id: 16,
+      id: 2,
       x: 4,
       y: 4,
       type: PLACEMENT_TYPE_BATTLE_FRAME,
@@ -65,7 +58,25 @@ const level = {
         target: { x: 5, y: 4 },
       },
     },
-
+    {
+      id: 3,
+      x: 0,
+      y: 0,
+      type: PLACEMENT_TYPE_TALL_SPRITE,
+      spriteImage: "/levels/dorm-vase.png",
+      // placementBase: [{ x: 7, y: 8 }],
+      fadeCells: [],
+    },
+    {
+      id: 4,
+      x: 0,
+      y: 0,
+      type: PLACEMENT_TYPE_TALL_SPRITE,
+      spriteImage: "/levels/dorm-chair.png",
+      placementBase: [{ x: 2, y: 8 }],
+      // fadeCells: [{ x: 2, y: 6 }],
+      fadeCells: [],
+    },
     // Interactive Locker at 5x1 and 5x2 (Combined into a single 1x2 entity)
     { id: 15, x: 5, y: 1, type: PLACEMENT_TYPE_LOCKER, width: 1, height: 2 },
   ],

@@ -1,5 +1,6 @@
 import { Camera } from '@/classes/Camera';
 import { DirectionControls } from '@/classes/DirectionControls';
+import { GameEventBus } from '@/classes/GameEventBus';
 import { GameLoop } from '@/classes/GameLoop';
 import { placementFactory } from '@/classes/PlacementFactory';
 import Levels from '@/levels/LevelsMap';
@@ -59,6 +60,11 @@ export class LevelState {
   lastReportedHeroPosition: string;
   collectedPlacementIds: Set<number>;
   initialHeroPosition?: HeroPosition;
+  readonly events: GameEventBus;
+  isDestroyed: boolean;
+  hasCompletedInitialTick: boolean;
+  lastHeroCellX: number | null;
+  lastHeroCellY: number | null;
 
   constructor(
     levelId: string,
@@ -89,6 +95,11 @@ export class LevelState {
     this.collectedPlacementIds = new Set(options.collectedPlacementIds ?? []);
     this.initialHeroPosition = options.initialHeroPosition;
     this.lastReportedHeroPosition = '';
+    this.events = new GameEventBus();
+    this.isDestroyed = false;
+    this.hasCompletedInitialTick = false;
+    this.lastHeroCellX = null;
+    this.lastHeroCellY = null;
 
     this.directionControls = new DirectionControls();
 
@@ -97,6 +108,11 @@ export class LevelState {
   }
 
   start() {
+    this.isDestroyed = false;
+    this.hasPendingRender = false;
+    this.hasCompletedInitialTick = false;
+    this.lastHeroCellX = null;
+    this.lastHeroCellY = null;
     this.isBattleMode = false;
     this.inputBlocked = false;
     this.activeBattleFrame = null;
@@ -151,6 +167,7 @@ export class LevelState {
       }
     });
     this.lastReportedHeroPosition = this.getHeroPositionKey();
+    this.emitHeroCellChanged(true);
 
     // create a camera
     this.camera = new Camera(this);
@@ -171,7 +188,7 @@ export class LevelState {
   }
 
   flushRender() {
-    if (!this.hasPendingRender) return;
+    if (this.isDestroyed || !this.hasPendingRender) return;
     this.hasPendingRender = false;
     if (this.renderEnabled) {
       this.onEmit(this.getState());
@@ -179,9 +196,16 @@ export class LevelState {
   }
 
   forceRender() {
+    if (this.isDestroyed) return;
     this.hasPendingRender = false;
     if (this.renderEnabled) {
       this.onEmit(this.getState());
+    }
+  }
+
+  requestRender() {
+    if (!this.isDestroyed) {
+      this.hasPendingRender = true;
     }
   }
 
@@ -207,9 +231,29 @@ export class LevelState {
     this.placements = this.placements.filter((p: any) => {
       return p.id !== placementToRemove.id;
     });
+    this.requestRender();
   }
 
   tick() {
+    if (this.isDestroyed) return;
+
+    const heroXBefore = this.heroRef?.x;
+    const heroYBefore = this.heroRef?.y;
+    const heroMovingPixelsRemainingBefore =
+      this.heroRef?.movingPixelsRemaining;
+    const heroMovingPixelsDirectionBefore =
+      this.heroRef?.movingPixelsDirection;
+    const heroFacingDirectionBefore = this.heroRef?.spriteFacingDirection;
+    const heroWalkFrameBefore = this.heroRef?.spriteWalkFrame;
+    const battleEnemyBefore = this.battleEnemy;
+    const battleEnemyXBefore = battleEnemyBefore?.x;
+    const battleEnemyYBefore = battleEnemyBefore?.y;
+    const battleEnemyMovingPixelsRemainingBefore =
+      battleEnemyBefore?.movingPixelsRemaining;
+    const battleEnemyMovingPixelsDirectionBefore =
+      battleEnemyBefore?.movingPixelsDirection;
+    const battleEnemyIsEnteringBefore = battleEnemyBefore?.isEntering;
+
     // check for movement here
     if (!this.isBattleMode && !this.inputBlocked && this.directionControls.direction) {
       this.heroRef.controllerMoveRequested(this.directionControls.direction);
@@ -220,6 +264,7 @@ export class LevelState {
       placement.tick();
     });
 
+    let placementWasCollected = false;
     this.placements.forEach((placement: any) => {
       if (
         placement.hasBeenCollected &&
@@ -227,8 +272,11 @@ export class LevelState {
       ) {
         this.collectedPlacementIds.add(placement.id);
         this.onPlacementCollected(placement.id);
+        placementWasCollected = true;
       }
     });
+
+    const heroCellChanged = this.emitHeroCellChanged();
 
     if (!this.isBattleMode && this.heroRef?.movingPixelsRemaining === 0) {
       const heroPositionKey = this.getHeroPositionKey();
@@ -239,7 +287,7 @@ export class LevelState {
     }
 
     // update the camera
-    this.camera.tick();
+    const cameraChanged = this.camera.tick();
 
     if (
       this.isBattleMode &&
@@ -255,10 +303,52 @@ export class LevelState {
       });
     }
 
-    // Mark that the React tree should be synced on the next display frame.
-    // The actual emit is coalesced by GameLoop.onRender so multiple fixed
-    // steps in one frame produce only one React reconciliation.
-    this.hasPendingRender = true;
+    const shouldRender =
+      !this.hasCompletedInitialTick ||
+      heroXBefore !== this.heroRef?.x ||
+      heroYBefore !== this.heroRef?.y ||
+      heroMovingPixelsRemainingBefore !== this.heroRef?.movingPixelsRemaining ||
+      heroMovingPixelsDirectionBefore !== this.heroRef?.movingPixelsDirection ||
+      heroFacingDirectionBefore !== this.heroRef?.spriteFacingDirection ||
+      heroWalkFrameBefore !== this.heroRef?.spriteWalkFrame ||
+      battleEnemyBefore !== this.battleEnemy ||
+      battleEnemyXBefore !== this.battleEnemy?.x ||
+      battleEnemyYBefore !== this.battleEnemy?.y ||
+      battleEnemyMovingPixelsRemainingBefore !==
+        this.battleEnemy?.movingPixelsRemaining ||
+      battleEnemyMovingPixelsDirectionBefore !==
+        this.battleEnemy?.movingPixelsDirection ||
+      battleEnemyIsEnteringBefore !== this.battleEnemy?.isEntering ||
+      heroCellChanged ||
+      cameraChanged ||
+      placementWasCollected;
+
+    this.hasCompletedInitialTick = true;
+    if (shouldRender) {
+      this.requestRender();
+    }
+  }
+
+  private emitHeroCellChanged(force = false): boolean {
+    if (!this.heroRef) return false;
+
+    const hasChanged =
+      force ||
+      this.lastHeroCellX !== this.heroRef.x ||
+      this.lastHeroCellY !== this.heroRef.y;
+    if (!hasChanged) return false;
+
+    const previousX = this.lastHeroCellX;
+    const previousY = this.lastHeroCellY;
+    this.lastHeroCellX = this.heroRef.x;
+    this.lastHeroCellY = this.heroRef.y;
+    this.events.emit('heroCellChanged', {
+      x: this.heroRef.x,
+      y: this.heroRef.y,
+      previousX,
+      previousY,
+    });
+    return true;
   }
 
   isPositionOutOfBounds(x: number, y: number) {
@@ -298,14 +388,24 @@ export class LevelState {
       this
     );
     this.placements.push(this.battleEnemy);
+    this.requestRender();
   }
 
   setCurrentDay(day: number) {
+    if (this.currentDay === day) return;
     this.currentDay = day;
+    this.requestRender();
   }
 
   setWatchedLessonDays(days: number[]) {
     this.watchedLessonDays = days;
+    this.requestRender();
+  }
+
+  setHeroSkin(heroSkin: string) {
+    if (this.heroSkin === heroSkin) return;
+    this.heroSkin = heroSkin;
+    this.requestRender();
   }
 
   setInputBlocked(blocked: boolean) {
@@ -350,6 +450,7 @@ export class LevelState {
     this.battleOrigin = null;
     this.isBattleMode = false;
     this.directionControls.clear();
+    this.requestRender();
   }
 
   fleeBattle() {
@@ -365,6 +466,7 @@ export class LevelState {
       this.heroRef.spriteFacingDirection = this.battleOrigin.facingDirection;
       this.heroRef.movingPixelsRemaining = 0;
       this.lastReportedHeroPosition = this.getHeroPositionKey();
+      this.emitHeroCellChanged();
     }
 
     this.activeBattleFrame = null;
@@ -414,6 +516,7 @@ export class LevelState {
 
   destroy() {
     // tear down the level
+    this.isDestroyed = true;
     this.gameLoop?.stop();
     this.directionControls.unbind();
     this.placements.forEach((p: any) => {
@@ -421,5 +524,7 @@ export class LevelState {
         p.destroy();
       }
     });
+    this.events.clear();
+    this.hasPendingRender = false;
   }
 }

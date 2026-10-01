@@ -1,4 +1,4 @@
-export const DEBUG_MODE = true;
+export const DEBUG_MODE = false;
 
 export const CELL_SIZE = 16;
 export const Z_INDEX_LAYER_SIZE = 10;

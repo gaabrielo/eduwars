@@ -49,6 +49,18 @@ const level = {
       direction: DIRECTION_LEFT,
     },
     {
+      id: 1,
+      x: 4,
+      y: 4,
+      type: PLACEMENT_TYPE_TELEPORT,
+      targetMapId: "RestaurantLevel",
+      targetX: 8,
+      targetY: 8,
+      width: 2,
+      height: 1,
+      opacity: 0,
+    },
+    {
       id: 2,
       x: 3,
       y: 3,

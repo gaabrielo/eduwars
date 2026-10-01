@@ -1,6 +1,9 @@
-import { Placement, PlacementProperties } from "@/game-objects/Placement";
-import { CELL_SIZE, Z_INDEX_LAYER_SIZE } from "@/utils/consts";
-import { LevelProps } from "@/utils/types";
+import { Placement, PlacementProperties } from '@/game-objects/Placement';
+import { GameEventBus } from '@/classes/GameEventBus';
+import type { GameEventListener } from '@/classes/GameEventBus';
+import TallSprite from '@/components/object-graphics/TallSprite';
+import { CELL_SIZE, Z_INDEX_LAYER_SIZE } from '@/utils/consts';
+import { LevelProps } from '@/utils/types';
 
 interface GridCell {
   x: number;
@@ -10,59 +13,72 @@ interface GridCell {
 interface TallSpriteProperties extends PlacementProperties {
   spriteImage: string;
   fadeCells: GridCell[];
+  placementBase: GridCell[];
 }
 
-type RuntimeLevel = LevelProps["level"] & {
+type RuntimeLevel = LevelProps['level'] & {
   heroRef?: {
     x: number;
     y: number;
   };
+  events: GameEventBus;
 };
 
 export class TallSpritePlacement extends Placement {
   private readonly runtimeLevel: RuntimeLevel;
-  private readonly spriteImage: string;
-  private readonly fadeCells: GridCell[];
+  readonly spriteImage: string;
+  readonly spriteWidth: number;
+  readonly spriteHeight: number;
+  readonly placementBase: GridCell[];
+  private readonly fadeCellKeys: ReadonlySet<string>;
 
   constructor(properties: TallSpriteProperties, level: RuntimeLevel) {
     super(properties, level as unknown as LevelProps);
     this.runtimeLevel = level;
     this.spriteImage = properties.spriteImage;
-    this.fadeCells = properties.fadeCells;
+    this.spriteWidth = level.tilesWidth * CELL_SIZE;
+    this.spriteHeight = level.tilesHeight * CELL_SIZE;
+    this.placementBase = properties.placementBase ?? [];
+    this.fadeCellKeys = new Set(
+      properties.fadeCells.map((cell) => this.getCellKey(cell.x, cell.y))
+    );
   }
 
   override zIndex() {
+    const hero = this.runtimeLevel.heroRef;
+    if (
+      hero &&
+      this.placementBase.some(
+        (cell) => cell.y === hero.y && hero.x >= cell.x
+      )
+    ) {
+      // HeroPlacement adds one to its row layer, keeping the hero above this sprite.
+      return hero.y * Z_INDEX_LAYER_SIZE;
+    }
+
     return (this.runtimeLevel.tilesHeight + 1) * Z_INDEX_LAYER_SIZE;
   }
 
-  private isHeroInsideFadeCell() {
-    const hero = this.runtimeLevel.heroRef;
-    if (!hero) return false;
-
-    return this.fadeCells.some((cell) => cell.x === hero.x && cell.y === hero.y);
+  private getCellKey(x: number, y: number): string {
+    return `${x}:${y}`;
   }
 
-  override renderComponent() {
-    const width = this.runtimeLevel.tilesWidth * CELL_SIZE;
-    const height = this.runtimeLevel.tilesHeight * CELL_SIZE;
+  isFadeCell(x: number, y: number): boolean {
+    return this.fadeCellKeys.has(this.getCellKey(x, y));
+  }
 
-    return (
-      <img
-        src={this.spriteImage}
-        alt=""
-        aria-hidden="true"
-        draggable={false}
-        className="pixelated block"
-        style={{
-          width: `${width}px`,
-          height: `${height}px`,
-          maxWidth: "none",
-          maxHeight: "none",
-          objectFit: "fill",
-          opacity: this.isHeroInsideFadeCell() ? 0.6 : 1,
-          pointerEvents: "none",
-        }}
-      />
-    );
+  isHeroInsideFadeCell(): boolean {
+    const hero = this.runtimeLevel.heroRef;
+    return hero ? this.isFadeCell(hero.x, hero.y) : false;
+  }
+
+  subscribeToHeroCellChanged(
+    listener: GameEventListener<'heroCellChanged'>
+  ): () => void {
+    return this.runtimeLevel.events.on('heroCellChanged', listener);
+  }
+
+  override renderComponent(): JSX.Element {
+    return <TallSprite placement={this} />;
   }
 }

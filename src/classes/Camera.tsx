@@ -8,6 +8,7 @@ import {
 
 const CAMERA_SPEED = 0.04;
 const CAMERA_LOOKAHEAD = 6;
+const CAMERA_EPSILON = 0.01;
 const USE_SMOOTH_CAMERA = true;
 
 export class Camera {
@@ -36,7 +37,10 @@ export class Camera {
     return currentValue * (1 - time) + destinationValue * time;
   }
 
-  tick() {
+  tick(): boolean {
+    const previousCameraX = this.cameraX;
+    const previousCameraY = this.cameraY;
+
     // start where the hero is now
     const hero = this.level.heroRef;
     const [heroX, heroY] = hero.displayXY();
@@ -67,9 +71,20 @@ export class Camera {
         cameraDestinationY,
         CAMERA_SPEED
       );
+
+      if (Math.abs(this.cameraX - cameraDestinationX) <= CAMERA_EPSILON) {
+        this.cameraX = cameraDestinationX;
+      }
+      if (Math.abs(this.cameraY - cameraDestinationY) <= CAMERA_EPSILON) {
+        this.cameraY = cameraDestinationY;
+      }
     } else {
       this.cameraX = cameraDestinationX;
       this.cameraY = cameraDestinationY;
     }
+
+    return (
+      previousCameraX !== this.cameraX || previousCameraY !== this.cameraY
+    );
   }
 }

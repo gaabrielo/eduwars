@@ -1,0 +1,102 @@
+import {
+  LEVEL_THEMES,
+  PLACEMENT_TYPE_HERO,
+  PLACEMENT_TYPE_BATTLE_FRAME,
+  PLACEMENT_TYPE_TELEPORT,
+  PLACEMENT_TYPE_LOCKER,
+  DIRECTION_UP,
+  PLACEMENT_TYPE_TALL_SPRITE,
+} from "@/utils/consts";
+import { TILES } from "@/utils/tiles";
+
+const level = {
+  theme: LEVEL_THEMES.BLUE,
+  tilesWidth: 16,
+  tilesHeight: 15,
+  backgroundImage: "/levels/sport-court.png", // We'll assume a placeholder for now
+  collisionGrid: [
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+    [1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+    [1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+  ],
+  placements: [
+    {
+      id: 0,
+      x: 4,
+      y: 5,
+      type: PLACEMENT_TYPE_HERO,
+    },
+    {
+      id: 1,
+      x: 1,
+      y: 1,
+      type: PLACEMENT_TYPE_TELEPORT,
+      targetMapId: "CourtyardLevel",
+      targetX: 2,
+      targetY: 12,
+      direction: DIRECTION_UP,
+    },
+    {
+      id: 2,
+      x: 4,
+      y: 4,
+      type: PLACEMENT_TYPE_BATTLE_FRAME,
+      width: 2,
+      height: 2,
+      day: 4,
+      battleId: "dorm-python-day-4",
+      enemy: {
+        name: "Professor Python",
+        spriteFrame: TILES.ROGUE_LEFT,
+        entry: { x: 6, y: 4 },
+        target: { x: 5, y: 4 },
+      },
+    },
+    {
+      id: 3,
+      x: 0,
+      y: 0,
+      type: PLACEMENT_TYPE_TALL_SPRITE,
+      spriteImage: "/levels/sport-court-left-hoop.png",
+      placementBase: [{ x: 1, y: 9 }],
+      fadeCells: [
+        { x: 1, y: 5 },
+        { x: 2, y: 5 },
+        { x: 1, y: 7 },
+        { x: 2, y: 7 },
+        { x: 1, y: 6 },
+        { x: 2, y: 6 },
+      ],
+    },
+    {
+      id: 4,
+      x: 0,
+      y: 0,
+      type: PLACEMENT_TYPE_TALL_SPRITE,
+      spriteImage: "/levels/sport-court-right-hoop.png",
+      placementBase: [{ x: 14, y: 9 }],
+      fadeCells: [
+        { x: 13, y: 5 },
+        { x: 14, y: 5 },
+        { x: 13, y: 7 },
+        { x: 14, y: 7 },
+        { x: 13, y: 6 },
+        { x: 14, y: 6 },
+      ],
+    },
+  ],
+};
+
+export default level;

@@ -17,6 +17,7 @@ const TELEPORT_ROTATION_CLASSES: Record<string, string> = {
 export class TeleportPlacement extends Placement {
   spriteFrame: string;
   direction: string;
+  opacity: number;
   targetMapId: string;
   targetX: number;
   targetY: number;
@@ -26,6 +27,7 @@ export class TeleportPlacement extends Placement {
     // Might be an invisible trigger, or a stair sprite
     this.spriteFrame = properties.spriteFrame || '7x3';
     this.direction = properties.direction || DIRECTION_RIGHT;
+    this.opacity = properties.opacity ?? 1;
     this.targetMapId = properties.targetMapId; // Which map to load
     this.targetX = properties.targetX; // Where to spawn the hero
     this.targetY = properties.targetY;
@@ -64,6 +66,7 @@ export class TeleportPlacement extends Placement {
           TELEPORT_ROTATION_CLASSES[this.direction] ||
           TELEPORT_ROTATION_CLASSES[DIRECTION_RIGHT]
         }
+        style={{ opacity: this.opacity }}
       >
         <Sprite frameCoordinate={this.spriteFrame} size={16} />
       </div>

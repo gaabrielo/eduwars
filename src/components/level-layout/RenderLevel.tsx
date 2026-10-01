@@ -258,9 +258,7 @@ export default function RenderLevel() {
   ]);
 
   useEffect(() => {
-    if (levelStateRef.current) {
-      levelStateRef.current.heroSkin = characterName;
-    }
+    levelStateRef.current?.setHeroSkin(characterName);
   }, [characterName]);
 
   useEffect(() => {
