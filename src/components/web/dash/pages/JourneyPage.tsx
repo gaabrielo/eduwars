@@ -68,7 +68,7 @@ const alternativeKeys = [
   'alternative_D',
 ];
 
-function formatClassChallenge(cl) {
+function formatClassChallenge(cl: any) {
   const res = cl.map(
     ({
       text,
@@ -80,7 +80,7 @@ function formatClassChallenge(cl) {
       id,
     }: any) => {
       const formattedAlternatives = JSON.parse(alternatives).reduce(
-        (acc, altText, altId) => {
+        (acc: Record<string, string>, altText: string, altId: number) => {
           acc[alternativeKeys[altId]] = altText;
           return acc;
         },
@@ -138,12 +138,13 @@ export function JourneyPage({ levelId }: any) {
 
   async function fetchLevel() {
     const jData = await getLevel(levelId);
-    if (!jData.error) {
+    if (!jData.error && jData.data && jData.data.length) {
       setSelectedJourney(jData.data[0]);
-    }
 
-    if (jData.data[0].class.length) {
-      setSelectedClass(formatClassFields(jData.data[0].class[0]));
+      const firstLevelItem = jData.data[0];
+      if (firstLevelItem.class.length) {
+        setSelectedClass(formatClassFields(firstLevelItem.class[0]));
+      }
     }
     setIsLoading(false);
   }
@@ -154,7 +155,7 @@ export function JourneyPage({ levelId }: any) {
     }
   }, [levelId]);
 
-  function handleSelectClass(classDt) {
+  function handleSelectClass(classDt: any) {
     if (classDt) {
       setSelectedClass(formatClassFields(classDt));
     }
@@ -172,7 +173,7 @@ export function JourneyPage({ levelId }: any) {
   function getCurrentSelectClassId() {
     if (selectedJourney && selectedClass) {
       const cid = selectedJourney.class.findIndex(
-        (c) => c.id === selectedClass?.id
+        (c: any) => c.id === selectedClass?.id
       );
       return cid + 1;
     }
@@ -238,7 +239,7 @@ export function JourneyPage({ levelId }: any) {
                     Adicionar
                   </button>
                 </CarouselItem>
-                {selectedJourney?.class.map((cl, key: number) => {
+                {selectedJourney?.class.map((cl: any, key: number) => {
                   return (
                     <CarouselItem
                       key={cl.id}

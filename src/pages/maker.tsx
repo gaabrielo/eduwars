@@ -53,7 +53,11 @@ export default function MapMakerPage() {
 
   const [isPanningDisable, setIsPanningDisable] = useState(true);
   const [isDragging, setIsDragging] = useState(false);
-  const [boardSpecs, setBoardSpecs] = useState(null);
+  // Shape of the react-zoom-pan-pinch TransformWrapper instance handled in
+  // handleSpriteScaleTransform; only state.scale is consumed here.
+  const [boardSpecs, setBoardSpecs] = useState<{
+    state: { scale: number };
+  } | null>(null);
 
   const currentBoardScale = boardSpecs?.state.scale ?? 1;
   const snapToGridModifier = createSnapModifier(16 * currentBoardScale);

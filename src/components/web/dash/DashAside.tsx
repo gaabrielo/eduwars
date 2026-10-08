@@ -10,7 +10,7 @@ import {
   AvatarImage,
 } from '@/components/ui/primitives/avatar';
 import { SmoothTabs } from '@/components/ui/shared/SmoothTabs';
-import { dashTabs } from '@/utils/consts';
+import { dashTabs, DashTabKey } from '@/utils/consts';
 import {
   ArrowLeftFromLineIcon,
   ArrowRightIcon,
@@ -50,7 +50,7 @@ export function DashAside({
   defaultSelected = null,
 }: any) {
   console.log('🚀 ~ defaultSelected:', defaultSelected);
-  const [selectedTabIndex, setSelectedTabIndex] = useState(
+  const [selectedTabIndex, setSelectedTabIndex] = useState<number | undefined>(
     typeof defaultSelected === 'number' ? defaultSelected : 0
   );
   const [user, setUser] = useState<any>(null);
@@ -63,7 +63,7 @@ export function DashAside({
   useEffect(() => {
     if (router?.query.tab) {
       console.log('🚀 ~ useEffect ~ router:', router);
-      const ntab = tabs[router?.query.tab]?.id;
+      const ntab = tabs[router?.query.tab as DashTabKey]?.id;
       setSelectedTabIndex(ntab);
     }
   }, [router]);
@@ -94,33 +94,45 @@ export function DashAside({
         orientation="vertical"
         selected={selectedTabIndex}
         tabs={Object.keys(tabs)
-          .sort((a, b) => tabs[a].id - tabs[b].id)
-          .map((k: any, tKey: number) => (
-            <Link
-              href={tabs[k]?.path}
-              key={k}
-              name={k}
-              id={tabs[k].id}
-              onClick={(e) => {
-                setSelectedTabIndex(tabs[k].id);
-                onSelectTab({ ...tabs[k], id: k });
-              }}
-              className="text-left flex items-center gap-1"
-            >
-              {tabs[k].label.split(`\n`).map((tabLabel, tabLabelIdx) => (
-                <React.Fragment key={tabLabelIdx}>
-                  {tabLabel}
-                  {tabs[k].label.split(`\n`).length > 1 && <br />}
-                </React.Fragment>
-              ))}
+          .sort(
+            (a, b) => tabs[a as DashTabKey].id - tabs[b as DashTabKey].id
+          )
+          .map((k: string, tKey: number) => {
+            // `name` is used by SmoothTabs to track the active tab through
+            // cloneElement; it is no longer declared on anchor attributes in
+            // newer @types/react, so it is spread through a typed variable.
+            const linkProps = { name: k };
+            return (
+              <Link
+                href={tabs[k as DashTabKey]?.path}
+                key={k}
+                id={tabs[k as DashTabKey].id as unknown as string}
+                {...linkProps}
+                onClick={(e) => {
+                  setSelectedTabIndex(tabs[k as DashTabKey].id);
+                  onSelectTab({ ...tabs[k as DashTabKey], id: k });
+                }}
+                className="text-left flex items-center gap-1"
+              >
+                {tabs[k as DashTabKey].label
+                  .split(`\n`)
+                  .map((tabLabel, tabLabelIdx) => (
+                    <React.Fragment key={tabLabelIdx}>
+                      {tabLabel}
+                      {tabs[k as DashTabKey].label.split(`\n`).length > 1 && (
+                        <br />
+                      )}
+                    </React.Fragment>
+                  ))}
 
-              {/* {(k === 'journey' || k === 'maker' || k === 'report') && (
-                <span className="text-xs bg-slate-700 rounded-lg text-white px-2 py-0.5 leading-4 mb-0.5">
-                  Maker
-                </span>
-              )} */}
-            </Link>
-          ))}
+                {/* {(k === 'journey' || k === 'maker' || k === 'report') && (
+                  <span className="text-xs bg-slate-700 rounded-lg text-white px-2 py-0.5 leading-4 mb-0.5">
+                    Maker
+                  </span>
+                )} */}
+              </Link>
+            );
+          })}
       />
 
       {!justTabs && (

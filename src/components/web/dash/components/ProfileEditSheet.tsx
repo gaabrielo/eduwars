@@ -80,7 +80,7 @@ const emptyFormat = {
 
 export default function ProfileEditSheet({ userData, isOpen, setIsOpen }: any) {
   const router = useRouter();
-  const [links, setLinks] = useState([]);
+  const [links, setLinks] = useState<string[]>([]);
   const [linkInputValue, setLinkInputValue] = useState('');
 
   useEffect(() => {

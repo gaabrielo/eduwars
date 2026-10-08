@@ -1,6 +1,7 @@
 import { Placement, PlacementProperties } from '@/game-objects/Placement';
 import { GameEventBus } from '@/classes/GameEventBus';
 import type { GameEventListener } from '@/classes/GameEventBus';
+import type { LevelState } from '@/classes/LevelState';
 import TallSprite from '@/components/object-graphics/TallSprite';
 import { CELL_SIZE, Z_INDEX_LAYER_SIZE } from '@/utils/consts';
 import { LevelProps } from '@/utils/types';
@@ -33,7 +34,7 @@ export class TallSpritePlacement extends Placement {
   private readonly fadeCellKeys: ReadonlySet<string>;
 
   constructor(properties: TallSpriteProperties, level: RuntimeLevel) {
-    super(properties, level as unknown as LevelProps);
+    super(properties, level as unknown as LevelState);
     this.runtimeLevel = level;
     this.spriteImage = properties.spriteImage;
     this.spriteWidth = level.tilesWidth * CELL_SIZE;

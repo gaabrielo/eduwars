@@ -11,22 +11,26 @@ import { JourneyCreatorCard } from '@/components/web/dash/components/JourneyCrea
 import { getLevelByAuthorId } from '@/services/dash/level';
 import { useRecoilValue } from 'recoil';
 import { userSessionAtom } from '@/atoms/web/userSessionAtom';
+import type { UntypedRowList } from '@/types/dbRows';
 
 export function DashPageJourneyList() {
   const router = useRouter();
   const userSession = useRecoilValue(userSessionAtom);
 
-  const [journeyList, setJourneyList] = useState([]);
+  const [journeyList, setJourneyList] = useState<
+    UntypedRowList | null | undefined
+  >([]);
 
   useEffect(() => {
-    if (!userSession) return;
+    const session = userSession?.data.session;
+    if (!session) return;
 
-    async function fetchLevels() {
-      const data = await getLevelByAuthorId(userSession.data.session.user.id);
+    async function fetchLevels(authorId: string) {
+      const data = await getLevelByAuthorId(authorId);
       if (!data.error) setJourneyList(data.data);
     }
 
-    fetchLevels();
+    fetchLevels(session.user.id);
   }, []);
 
   function handleSelectJourney(jl: any) {
@@ -53,15 +57,16 @@ export function DashPageJourneyList() {
         </CardContent>
       </Card>
 
-      {journeyList.map((jl) => {
-        return (
-          <JourneyCreatorCard
-            key={jl.id}
-            data={jl}
-            onClick={() => handleSelectJourney(jl)}
-          />
-        );
-      })}
+      {journeyList &&
+        journeyList.map((jl) => {
+          return (
+            <JourneyCreatorCard
+              key={jl.id}
+              data={jl}
+              onClick={() => handleSelectJourney(jl)}
+            />
+          );
+        })}
     </div>
   );
 }

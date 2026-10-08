@@ -1,5 +1,5 @@
 import { Skeleton } from '@/components/ui/skeleton';
-import { dashTabs } from '@/utils/consts';
+import { dashTabs, DashTabKey } from '@/utils/consts';
 import { useRouter } from 'next/router';
 import { BreadcrumbContainer } from '@/components/web/dash/components/BreadcrumbContainer';
 
@@ -35,15 +35,15 @@ export function BreadcrumbControl({ title }: any) {
       default:
         tabList = [dashTabs.home];
 
-        if (dashTabs[title]) {
-          tabList.push(dashTabs[title]);
-        } else if (!dashTabs[title]) {
+        if (dashTabs[title as DashTabKey]) {
+          tabList.push(dashTabs[title as DashTabKey]);
+        } else if (!dashTabs[title as DashTabKey]) {
           tabList.push({
             label: title,
             path: router.asPath,
           });
-        } else if (dashTabs[router.query.tab]) {
-          tabList.push(dashTabs[router.query.tab]);
+        } else if (dashTabs[router.query.tab as DashTabKey]) {
+          tabList.push(dashTabs[router.query.tab as DashTabKey]);
         } else {
           tabList.push({
             label: 'Nenhum resultado encontrado',

@@ -224,7 +224,10 @@ export default function RenderLevel() {
     window.addEventListener('BATTLE_FINISHED', handleBattleFinished);
 
     const handleBattleFled = (event: Event) => {
-      const { battleId } = (event as CustomEvent<{ battleId: string }>).detail;
+      const { battleId, keepKnowledgeLosses } = (event as CustomEvent<{
+        battleId: string;
+        keepKnowledgeLosses: boolean;
+      }>).detail;
       if (
         !battleSnapshotRef.current ||
         levelStateRef.current?.activeBattleFrame?.battleId !== battleId
@@ -234,7 +237,7 @@ export default function RenderLevel() {
 
       const snapshot = battleSnapshotRef.current;
       levelStateRef.current.fleeBattle();
-      restoreBattleSnapshot(snapshot);
+      restoreBattleSnapshot(snapshot, { keepKnowledgeLosses });
       battleSnapshotRef.current = null;
       setLevel(levelStateRef.current.getState());
     };

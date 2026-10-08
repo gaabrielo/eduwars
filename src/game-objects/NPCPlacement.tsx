@@ -1,12 +1,7 @@
 import Hero from '@/components/object-graphics/Hero';
 import { Placement, PlacementProperties } from '@/game-objects/Placement';
-import { LevelProps, NPCPlacementConfig } from '@/utils/types';
-
-type RuntimeLevel = LevelProps & {
-  heroRef?: { x: number; y: number };
-  isBattleMode?: boolean;
-  inputBlocked?: boolean;
-};
+import type { LevelState } from '@/classes/LevelState';
+import { NPCPlacementConfig } from '@/utils/types';
 
 export class NPCPlacement extends Placement {
   npcId: string;
@@ -14,7 +9,7 @@ export class NPCPlacement extends Placement {
   isHeroNear: boolean;
   handleKeyDown: (event: KeyboardEvent) => void;
 
-  constructor(properties: NPCPlacementConfig, level: RuntimeLevel) {
+  constructor(properties: NPCPlacementConfig, level: LevelState) {
     super(properties as PlacementProperties, level);
     this.npcId = properties.npcId;
     this.spriteFrame = properties.spriteFrame;
@@ -24,8 +19,8 @@ export class NPCPlacement extends Placement {
       if (
         event.key.toLowerCase() === 'e' &&
         this.isHeroNear &&
-        !(this.level as RuntimeLevel).isBattleMode &&
-        !(this.level as RuntimeLevel).inputBlocked
+        !this.level.isBattleMode &&
+        !this.level.inputBlocked
       ) {
         this.interact();
       }
@@ -39,7 +34,7 @@ export class NPCPlacement extends Placement {
   }
 
   tick(): void {
-    const hero = (this.level as RuntimeLevel).heroRef;
+    const hero = this.level.heroRef;
     if (!hero) return;
 
     const isNear =

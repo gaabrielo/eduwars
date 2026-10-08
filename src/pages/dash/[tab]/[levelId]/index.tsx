@@ -2,13 +2,15 @@ import DashLayout from '@/components/web/dash/DashLayout';
 import { AlertCard } from '@/components/web/dash/components/AlertCard';
 import { DashPageHeader } from '@/components/web/dash/components/DashPageHeader';
 import { JourneyPage } from '@/components/web/dash/pages/JourneyPage';
-import { dashTabs } from '@/utils/consts';
+import { dashTabs, DashTabKey } from '@/utils/consts';
 import { useRouter } from 'next/router';
+import type { ReactElement, ReactNode } from 'react';
 
-function getActiveTabLabel(tab: string) {
+function getActiveTabLabel(tab: string | string[] | undefined) {
   if (!tab) return;
+  if (typeof tab !== 'string') return;
 
-  return dashTabs[tab];
+  return dashTabs[tab as DashTabKey];
 }
 
 export default function LevelJourneyPage() {
@@ -46,6 +48,6 @@ export default function LevelJourneyPage() {
   );
 }
 
-LevelJourneyPage.getLayout = function getLayout(page) {
+LevelJourneyPage.getLayout = function getLayout(page: ReactElement): ReactNode {
   return <DashLayout>{page}</DashLayout>;
 };

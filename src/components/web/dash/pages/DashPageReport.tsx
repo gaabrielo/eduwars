@@ -16,24 +16,26 @@ import { format } from 'date-fns';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { useRecoilValue } from 'recoil';
+import type { UntypedRowList } from '@/types/dbRows';
 
 export function DashPageReport() {
   const router = useRouter();
 
   const userSession = useRecoilValue(userSessionAtom);
-  const [recentSignedUsers, setRecentSignedUsers] = useState();
+  const [recentSignedUsers, setRecentSignedUsers] = useState<
+    UntypedRowList | null | undefined
+  >();
 
   useEffect(() => {
-    if (!userSession) return;
+    const session = userSession?.data.session;
+    if (!session) return;
 
-    async function fetchRecentSignerUsers() {
-      const data = await getRecentUsersSignedToAuthorLevels(
-        userSession.data.session.user.id
-      );
+    async function fetchRecentSignerUsers(userId: string) {
+      const data = await getRecentUsersSignedToAuthorLevels(userId);
       if (!data.error) setRecentSignedUsers(data.data);
     }
 
-    fetchRecentSignerUsers();
+    fetchRecentSignerUsers(session.user.id);
   }, [userSession]);
 
   return (

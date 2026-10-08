@@ -46,10 +46,15 @@ import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { useRecoilValue } from 'recoil';
+import type { UntypedRowList } from '@/types/dbRows';
 
 export function DashPageSearchLevel() {
-  const [recentCreatedLevels, setRecentCreatedLevels] = useState();
-  const [searchedLevels, setSearchedLevels] = useState();
+  const [recentCreatedLevels, setRecentCreatedLevels] = useState<
+    UntypedRowList | null | undefined
+  >();
+  const [searchedLevels, setSearchedLevels] = useState<
+    UntypedRowList | null | undefined
+  >();
   console.log('🚀 ~ DashPageSearchLevel ~ searchedLevels:', searchedLevels);
 
   const [isLoadingRCL, setIsLoadingRCL] = useState(true);

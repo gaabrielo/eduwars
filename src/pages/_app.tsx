@@ -1,5 +1,7 @@
 import '@/styles/globals.css';
 import type { AppProps } from 'next/app';
+import type { NextPage } from 'next';
+import type { ReactElement, ReactNode } from 'react';
 import { RecoilRoot } from 'recoil';
 import { Rubik } from 'next/font/google';
 
@@ -7,8 +9,15 @@ import '../components/ui/shared/sortable-list/components/SortableItem/SortableIt
 
 const rubik = Rubik({ subsets: ['latin'] });
 
-export default function App({ Component, pageProps }: AppProps) {
-  const getLayout = Component.getLayout ?? ((page) => page);
+type NextPageWithLayout = NextPage & {
+  getLayout?: (page: ReactElement) => ReactNode;
+};
+
+export default function App({
+  Component,
+  pageProps,
+}: AppProps & { Component: NextPageWithLayout }) {
+  const getLayout = Component.getLayout ?? ((page: ReactElement) => page);
 
   return (
     <RecoilRoot>

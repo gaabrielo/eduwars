@@ -127,7 +127,7 @@ export function BoardMenu({
 }: any) {
   const [image, setImage] = useState<any>(null);
 
-  const imageInputRef = useRef(null);
+  const imageInputRef = useRef<HTMLInputElement>(null);
 
   const onImageChange = (event: any) => {
     if (event.target.files && event.target.files[0]) {
@@ -160,7 +160,7 @@ export function BoardMenu({
         <PlacementButton
           selectable={false}
           tooltipContent={'Importar imagem'}
-          onClick={() => imageInputRef?.current.click()}
+          onClick={() => imageInputRef.current?.click()}
         >
           <ImagePlusIcon className={ICON_STYLE} />
           <input

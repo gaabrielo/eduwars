@@ -31,6 +31,8 @@ export const directionUpdateMap = {
   [DIRECTION_RIGHT]: { x: 1, y: 0 },
 };
 
+export type Direction = keyof typeof directionUpdateMap;
+
 // character states
 export const BODY_SKINS = {
   WATER: "WATER",
@@ -159,3 +161,5 @@ export const dashTabs = {
   //   label: 'Configurações',
   // },
 };
+
+export type DashTabKey = keyof typeof dashTabs;

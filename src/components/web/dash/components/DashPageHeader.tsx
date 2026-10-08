@@ -2,7 +2,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { BreadcrumbControl } from '@/components/web/dash/components/BreadcrumbControl';
 
 interface Props {
-  title?: string;
+  title?: string | null;
 }
 
 export function DashPageHeader({ title }: Props) {

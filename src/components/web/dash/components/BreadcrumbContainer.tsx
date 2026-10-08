@@ -12,7 +12,7 @@ export function BreadcrumbContainer({ tabs }: any) {
     return (
       <Breadcrumb>
         <BreadcrumbList>
-          {tabs.map((tab, tabKey) => (
+          {tabs.map((tab: any, tabKey: number) => (
             <>
               <BreadcrumbItem>
                 <BreadcrumbLink href={tab.path}>{tab.label}</BreadcrumbLink>

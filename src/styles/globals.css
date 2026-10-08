@@ -204,6 +204,50 @@ canvas,
   }
 }
 
+/* Knowledge Bar (HeroHud): pure-CSS pixel progress bar. The frame gets
+   stepped "pixel-art" corners via clip-path; the track and the fill share
+   the same inner inset (16px sides, 10px top/bottom) previously provided
+   by the nine-slice sprites. */
+.knowledge-bar-frame {
+  clip-path: polygon(
+    0 8px,
+    4px 8px,
+    4px 4px,
+    8px 4px,
+    8px 0,
+    calc(100% - 8px) 0,
+    calc(100% - 8px) 4px,
+    calc(100% - 4px) 4px,
+    calc(100% - 4px) 8px,
+    100% 8px,
+    100% calc(100% - 8px),
+    calc(100% - 4px) calc(100% - 8px),
+    calc(100% - 4px) calc(100% - 4px),
+    calc(100% - 8px) calc(100% - 4px),
+    calc(100% - 8px) 100%,
+    8px 100%,
+    8px calc(100% - 4px),
+    4px calc(100% - 4px),
+    4px calc(100% - 8px),
+    0 calc(100% - 8px)
+  );
+}
+
+.knowledge-bar-track {
+  top: 10px;
+  bottom: 10px;
+  left: 16px;
+  right: 16px;
+}
+
+.knowledge-bar-fill {
+  top: 10px;
+  bottom: 10px;
+  left: 16px;
+  max-width: calc(100% - 32px);
+  transition: width 0.3s ease-out;
+}
+
 /* @layer base {
   * {
     @apply border-border;

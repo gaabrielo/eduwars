@@ -166,6 +166,8 @@ export const TILES = {
   BATTLE_FRAME_TOP_LEFT_DISABLED: '17x8',
 };
 
+export type MakerSelectableTileKey = keyof typeof MAKER_SELECTABLE_TILES;
+
 // MAKER
 export const MAKER_SELECTABLE_TILES = {
   // Basics

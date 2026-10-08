@@ -4,8 +4,9 @@ import {
   DIRECTION_RIGHT,
   DIRECTION_UP,
   Z_INDEX_LAYER_SIZE,
+  Direction,
 } from '@/utils/consts';
-import { LevelProps } from '@/utils/types';
+import type { LevelState } from '@/classes/LevelState';
 
 export interface PlacementProperties {
   id: number;
@@ -23,15 +24,15 @@ export class Placement {
   y: number;
   width: number;
   height: number;
-  level: LevelProps;
+  level: LevelState;
   travelPixelsPerFrame: number;
   movingPixelsRemaining: number;
-  movingPixelsDirection: string;
+  movingPixelsDirection: Direction;
   spriteFacingDirection: string;
   spriteWalkFrame: number;
   hasBeenCollected: boolean;
 
-  constructor(properties: PlacementProperties, level: LevelProps) {
+  constructor(properties: PlacementProperties, level: LevelState) {
     this.id = properties.id;
     this.type = properties.type;
     this.x = properties.x;

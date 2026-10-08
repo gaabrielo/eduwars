@@ -1,11 +1,14 @@
 import { cn } from '@/utils/helpers';
 import Image from 'next/image';
-import { ReactElement, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
-interface Props extends ReactElement {
+interface Props {
   src: string;
   alt?: string;
   className?: string;
+  // Passed through the ..used Image element; currently only consumed as a
+  // duplicated generic prop to keep existing call sites working unchanged.
+  onClick?: () => void;
 }
 
 export function YoutubeThumbnail({

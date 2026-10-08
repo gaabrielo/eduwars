@@ -20,9 +20,11 @@ export class BattleFramePlacement extends Placement {
   }
 
   get isDisabled() {
-    const nonCollectedEnergyDrink = this.level.placements.find((p) => {
-      return p.type === PLACEMENT_TYPE_ENERGY_DRINK && !p.hasBeenCollected;
-    });
+    const nonCollectedEnergyDrink = this.level.placements.find(
+      (p: Placement) => {
+        return p.type === PLACEMENT_TYPE_ENERGY_DRINK && !p.hasBeenCollected;
+      }
+    );
 
     return Boolean(nonCollectedEnergyDrink);
   }

@@ -20,7 +20,7 @@ export function SmoothTabs({
 
   useEffect(() => {
     if (typeof selected === 'number') {
-      const selectedTabName = tabs.find((t) => t.props.id === selected);
+      const selectedTabName = tabs.find((t: any) => t.props.id === selected);
       setActiveTab(selectedTabName.props.name);
     }
   }, [selected]);

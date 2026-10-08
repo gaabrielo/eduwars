@@ -42,14 +42,16 @@ import { Progress } from '@/components/ui/progress';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { LevelCardGame } from '@/components/web/dash/components/LevelCardGame';
+import type { User } from '@supabase/supabase-js';
+import type { UntypedRowList } from '@/types/dbRows';
 
 export function DashPageHome() {
   const router = useRouter();
 
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<User | null>(null);
   console.log('🚀 ~ DashPageHome ~ user:', user);
-  const [authorLevels, setAuthorLevels] = useState(null);
-  const [myMaps, setMyMaps] = useState();
+  const [authorLevels, setAuthorLevels] = useState<UntypedRowList | null>(null);
+  const [myMaps, setMyMaps] = useState<UntypedRowList | null | undefined>();
   const [isLoadingLevels, setIsLoadingLevels] = useState(true);
 
   useEffect(() => {
@@ -61,11 +63,13 @@ export function DashPageHome() {
   }, [user]);
 
   const fetchMyMaps = async () => {
+    if (!user) return;
     const res = await getLevelsThatUserIsSigned(user.id);
     setMyMaps(res.data);
   };
 
   const fetchAuthorLevels = async () => {
+    if (!user) return;
     const res = await getLevelByAuthorId(user.id);
     setAuthorLevels(res.data);
 
@@ -173,7 +177,7 @@ export function DashPageHome() {
         </CardContent>
       </Card>
 
-      {authorLevels?.length > 0 && (
+      {authorLevels && authorLevels.length > 0 && (
         <Card>
           <CardHeader>
             <CardTitle>Criado por mim</CardTitle>

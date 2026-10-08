@@ -1,7 +1,10 @@
 import SpriteAsideItem from '@/components/web/maker/SpriteAsideItem';
 import { Input } from '@/components/ui/primitives/Input';
 import { cn } from '@/utils/helpers';
-import { MAKER_SELECTABLE_TILES } from '@/utils/tiles';
+import {
+  MAKER_SELECTABLE_TILES,
+  MakerSelectableTileKey,
+} from '@/utils/tiles';
 import { useEffect, useRef, useState } from 'react';
 
 export function SpritesAside({
@@ -84,10 +87,12 @@ export function SpritesAside({
           .filter((spt: string) => {
             if (searchTerm.trim() === '') return true;
 
+            const tile = MAKER_SELECTABLE_TILES[spt as MakerSelectableTileKey];
             if (
-              MAKER_SELECTABLE_TILES[spt]?.keywords?.includes(
-                searchTerm.trim().toLowerCase()
-              ) ||
+              ('keywords' in tile &&
+                tile.keywords?.includes(
+                  searchTerm.trim().toLowerCase()
+                )) ||
               spt
                 .replaceAll('_', ' ')
                 .toLowerCase()
@@ -99,7 +104,7 @@ export function SpritesAside({
           .map((spt: string) => {
             return (
               <SpriteAsideItem
-                spriteSettings={MAKER_SELECTABLE_TILES[spt]}
+                spriteSettings={MAKER_SELECTABLE_TILES[spt as MakerSelectableTileKey]}
                 spriteKey={spt}
                 key={spt}
                 spriteScale={3}

@@ -18,7 +18,9 @@ export function Board({
 }: any) {
   const [placements, setPlacements] = useState<{ [key: string]: number }>({});
   const [isClicking, setIsClicking] = useState(false);
-  const [collisionConfigureList, setCollisionConfigureList] = useState<any>([]);
+  const [collisionConfigureList, setCollisionConfigureList] = useState<
+    { xy: string; remove: boolean }[]
+  >([]);
 
   const currentDraggedSprite = useRecoilValue(currentDraggedSpriteAtom);
   console.log('🚀 ~ currentDraggedSprite:', currentDraggedSprite);

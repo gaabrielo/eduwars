@@ -23,11 +23,13 @@ import { ArrowTopRightIcon, PlusIcon } from '@radix-ui/react-icons';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { useRecoilValue } from 'recoil';
+import type { UntypedRow } from '@/types/dbRows';
+import type { ReactElement, ReactNode } from 'react';
 
 export default function ProfilePage() {
   const router = useRouter();
   const userSession = useRecoilValue(userSessionAtom);
-  const [userData, setUserData] = useState();
+  const [userData, setUserData] = useState<UntypedRow | null>();
   console.log('🚀 ~ ProfilePage ~ userData:', userData);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -39,7 +41,7 @@ export default function ProfilePage() {
     async function fetchUserData() {
       const res = await getUserById(router.query.userId);
 
-      if (!res.error) setUserData(res.data[0]);
+      if (!res.error && res.data[0]) setUserData(res.data[0]);
       setIsLoading(false);
     }
 
@@ -109,7 +111,7 @@ export default function ProfilePage() {
                 </span>
                 <div className="h-7 w-0.5 bg-slate-200" />
 
-                {userSession?.data.session.user.id === userData?.id ? (
+                {userSession?.data.session?.user.id === userData?.id ? (
                   <>
                     <ProfileEditSheet
                       userData={userData}
@@ -148,7 +150,7 @@ export default function ProfilePage() {
               <CardContent>
                 {userData?.links && userData.links.length > 0 ? (
                   <ul className="flex flex-col gap-2">
-                    {userData.links.map((l) => (
+                    {userData.links.map((l: string) => (
                       <li className="group transition-all flex items-center text-base">
                         <a href={l} target="_blank">
                           {l}
@@ -203,6 +205,6 @@ export default function ProfilePage() {
   );
 }
 
-ProfilePage.getLayout = function getLayout(page) {
+ProfilePage.getLayout = function getLayout(page: ReactElement): ReactNode {
   return <DashLayout>{page}</DashLayout>;
 };

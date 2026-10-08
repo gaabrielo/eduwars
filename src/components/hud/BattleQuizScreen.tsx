@@ -38,6 +38,7 @@ export default function BattleQuizScreen() {
   const [npcHealth, setNpcHealth] = useState(questions.length);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [showFeedback, setShowFeedback] = useState<string | null>(null);
+  const [showFleeConfirm, setShowFleeConfirm] = useState(false);
   const [damagePop, setDamagePop] = useState<{
     key: number;
     amount: number;
@@ -61,6 +62,7 @@ export default function BattleQuizScreen() {
     setShowFeedback(null);
     setDamagePop(null);
     setEnemyHitKey(0);
+    setShowFleeConfirm(false);
 
     return () => {
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
@@ -197,7 +199,18 @@ export default function BattleQuizScreen() {
     );
   };
 
-  const fleeBattle = () => {
+  const requestFlee = () => {
+    if (!battleEnemy || battleFinishedRef.current) return;
+    // Only losses from the current battle session (knowledgeLostRef) open the
+    // confirmation; fleeing with no battle losses keeps the old direct flee.
+    if (knowledgeLostRef.current > 0) {
+      setShowFleeConfirm(true);
+      return;
+    }
+    dispatchBattleFled(false);
+  };
+
+  const dispatchBattleFled = (keepKnowledgeLosses: boolean) => {
     if (!battleEnemy || battleFinishedRef.current) return;
     battleFinishedRef.current = true;
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
@@ -209,9 +222,18 @@ export default function BattleQuizScreen() {
     setEnemyHitKey(0);
     window.dispatchEvent(
       new CustomEvent("BATTLE_FLED", {
-        detail: { battleId: battleEnemy.fieldId },
+        detail: { battleId: battleEnemy.fieldId, keepKnowledgeLosses },
       }),
     );
+  };
+
+  const confirmFlee = () => {
+    setShowFleeConfirm(false);
+    dispatchBattleFled(true);
+  };
+
+  const cancelFlee = () => {
+    setShowFleeConfirm(false);
   };
 
   return (
@@ -224,7 +246,7 @@ export default function BattleQuizScreen() {
         <div className="mb-5 flex justify-end">
           <button
             className="rounded border border-slate-400 px-4 py-2 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-100"
-            onClick={fleeBattle}
+            onClick={requestFlee}
           >
             Fugir da batalha
           </button>
@@ -344,6 +366,36 @@ export default function BattleQuizScreen() {
           <div className="text-green-600 text-xl font-bold py-8">NPC derrotado!</div>
         )}
       </div>
+
+      {showFleeConfirm && (
+        <div className="absolute inset-0 z-[60] flex items-center justify-center bg-black/60">
+          <div className="w-3/4 max-w-md rounded-lg border-4 border-slate-800 bg-white p-5 shadow-xl">
+            <h3 className="mb-3 text-xl font-bold text-red-600">
+              Fugir da batalha?
+            </h3>
+            <p className="text-slate-800">
+              Você já perdeu Pontos de Conhecimento durante a batalha.
+            </p>
+            <p className="mt-2 text-slate-800">
+              Se você fugir agora, não irá recuperar os pontos perdidos.
+            </p>
+            <div className="mt-5 flex justify-end gap-3">
+              <button
+                className="rounded border border-slate-400 px-5 py-2 font-semibold text-slate-700 transition-colors hover:bg-slate-100"
+                onClick={cancelFlee}
+              >
+                Continuar batalhando
+              </button>
+              <button
+                className="rounded bg-red-600 px-5 py-2 font-bold text-white transition-colors hover:bg-red-700"
+                onClick={confirmFlee}
+              >
+                Fugir
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

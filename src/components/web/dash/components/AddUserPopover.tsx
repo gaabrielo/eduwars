@@ -13,11 +13,12 @@ import { addUsersToLevel, getUsers } from '@/services/dash/journey';
 import { PlusCircledIcon } from '@radix-ui/react-icons';
 import clsx from 'clsx';
 import { useEffect, useState } from 'react';
+import { UntypedRowList } from '@/types/dbRows';
 
 export function AddUserPopover({ levelId }: any) {
   const [searchText, setSearchText] = useState('');
-  const [userList, setUserList] = useState([]);
-  const [selectedUsers, setSelectedUsers] = useState([]);
+  const [userList, setUserList] = useState<UntypedRowList | null>([]);
+  const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
 
   useEffect(() => {
     if (searchText.trim() !== '') {
@@ -32,7 +33,7 @@ export function AddUserPopover({ levelId }: any) {
     // remove unlisted users from selected
     setSelectedUsers((prev) => {
       const filteredSelected = [...prev].filter((emailB) =>
-        users.data.some((itemA) => itemA.email === emailB)
+        users.data!.some((itemA) => itemA.email === emailB)
       );
 
       return filteredSelected;
@@ -41,7 +42,7 @@ export function AddUserPopover({ levelId }: any) {
 
   async function handleAddUsers() {
     const usersToAddFormatted = selectedUsers.map((uEmail) => ({
-      user_id: userList.find((u) => u.email === uEmail).id,
+      user_id: userList!.find((u) => u.email === uEmail).id,
       level_id: levelId,
     }));
 
@@ -68,8 +69,8 @@ export function AddUserPopover({ levelId }: any) {
         </div>
 
         <ul>
-          {userList.length > 0 && <Separator />}
-          {userList
+          {userList!.length > 0 && <Separator />}
+          {userList!
             // .filter((u) => !selectedUsers.includes(u.email))
             .map((u) => (
               <li className="w-full" key={u.id}>
@@ -133,7 +134,7 @@ export function AddUserPopover({ levelId }: any) {
           ))}
         </ul> */}
 
-        {userList.length == 0 && <Separator />}
+        {userList!.length == 0 && <Separator />}
         <footer className="p-3">
           <Button
             className="w-full"

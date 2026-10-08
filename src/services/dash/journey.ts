@@ -1,4 +1,6 @@
 import { supabase } from '@/services/supabase';
+import type { PostgrestError } from '@supabase/supabase-js';
+import type { UntypedRowList } from '@/types/dbRows';
 
 export async function createLevel() {
   const res = await supabase
@@ -16,7 +18,14 @@ export async function getLevels() {
   return res;
 }
 
-export async function getLevel(id: number) {
+/**
+ * Loosely typed on purpose: the raw select string below is not fully valid
+ * (the `level_cover` relation is missing a comma) so supabase-js resolves its
+ * result to a select-parser error type instead of rows.
+ */
+export async function getLevel(
+  id: number
+): Promise<{ data: UntypedRowList | null; error: PostgrestError | null }> {
   const res = await supabase
     .from('level')
     .select(

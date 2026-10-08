@@ -10,6 +10,7 @@ import {
   HERO_RUN_2,
   Z_INDEX_LAYER_SIZE,
   CHARACTERS,
+  Direction,
 } from '@/utils/consts';
 import { TILES } from '@/utils/tiles';
 import { Collision } from '@/classes/Collision';
@@ -46,7 +47,7 @@ const getHeroSkinMap = (skinType: string) => {
 };
 
 export class HeroPlacement extends Placement {
-  controllerMoveRequested(direction: any) {
+  controllerMoveRequested(direction: Direction) {
     // attempt to start movie
     if (this.movingPixelsRemaining > 0) {
       return;
@@ -65,7 +66,7 @@ export class HeroPlacement extends Placement {
     this.updateWalkFrame();
   }
 
-  canMoveToNextDestination(direction: string) {
+  canMoveToNextDestination(direction: Direction) {
     //is the next space in bounds?
     const { x, y } = directionUpdateMap[direction];
     const nextX = this.x + x;

@@ -44,7 +44,9 @@ import { useState } from 'react';
 import { Separator } from '@/components/ui/primitives/Separator';
 
 export default function NewClassModal() {
-  const [newChallengeForm, setNewChallengeForm] = useState(null);
+  const [newChallengeForm, setNewChallengeForm] = useState<boolean | null>(
+    null
+  );
 
   function handleNewChallenge() {
     setNewChallengeForm((prev) => !prev);

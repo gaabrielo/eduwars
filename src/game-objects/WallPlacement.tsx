@@ -3,7 +3,7 @@ import { Placement } from '@/game-objects/Placement';
 import { THEME_TILES_MAP } from '@/utils/consts';
 
 export class WallPlacement extends Placement {
-  isSolidForBody(_body) {
+  isSolidForBody(_body: unknown) {
     return true;
   }
 

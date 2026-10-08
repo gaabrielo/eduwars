@@ -233,7 +233,7 @@ function DayPageBody({
         </div>
       )}
 
-      {dayData && dayData.conceptMisses.length > 0 && (
+      {/* {dayData && dayData.conceptMisses.length > 0 && (
         <div>
           <p className="mb-1 flex items-center gap-1 text-xs font-bold text-red-600">
             <AlertTriangle className="h-3 w-3" />
@@ -251,7 +251,7 @@ function DayPageBody({
             ))}
           </div>
         </div>
-      )}
+      )} */}
     </div>
   );
 }

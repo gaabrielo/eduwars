@@ -6,11 +6,14 @@ import { CalendarIcon } from '@radix-ui/react-icons';
 import { format } from 'date-fns';
 import { CalendarDaysIcon, EyeIcon, Gamepad2Icon } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import type { UntypedRowList } from '@/types/dbRows';
 
 const MAX_NOTIFICATIONS = 3;
 
 export function DashAsideNotifications({ user, justTabs }: any) {
-  const [levelInclusionLogList, setLevelInclusionLogList] = useState();
+  const [levelInclusionLogList, setLevelInclusionLogList] = useState<
+    UntypedRowList | null | undefined
+  >();
 
   const [isLoading, setIsLoading] = useState(true);
 
@@ -57,9 +60,10 @@ export function DashAsideNotifications({ user, justTabs }: any) {
             </Card>
           ) : (
             <ul className="flex flex-col gap-2">
-              {levelInclusionLogList?.length > 0 &&
+              {levelInclusionLogList &&
+                levelInclusionLogList.length > 0 &&
                 levelInclusionLogList
-                  ?.slice(0, MAX_NOTIFICATIONS)
+                  .slice(0, MAX_NOTIFICATIONS)
                   .map((lvl) => (
                     <li>
                       <Card className="shadow-none hover:border-zinc-500 hover:cursor-pointer transition-all">
@@ -91,7 +95,9 @@ export function DashAsideNotifications({ user, justTabs }: any) {
         </>
       )}
 
-      {(levelInclusionLogList?.length > MAX_NOTIFICATIONS || justTabs) && (
+      {((levelInclusionLogList &&
+        levelInclusionLogList.length > MAX_NOTIFICATIONS) ||
+        justTabs) && (
         <Button
           className={`w-fit mx-auto mt-2 font-normal ${justTabs && 'w-full'}`}
           variant={'secondary'}

@@ -71,6 +71,18 @@ const emptyFormat = {
   correct_answer: '',
 };
 
+interface ChallengeFields {
+  id: string;
+  text: string;
+  has_hint: boolean;
+  hint_description: string;
+  alternative_A: string;
+  alternative_B: string;
+  alternative_C: string;
+  alternative_D: string;
+  correct_answer: string;
+}
+
 export default function NewClassSheet({
   levelId,
   isOpen,
@@ -81,7 +93,7 @@ export default function NewClassSheet({
   const [isChallengeFormActive, setIsChallengeFormActive] = useState<
     null | boolean
   >(null);
-  const [alternatives, setAlternatives] = useState([]);
+  const [alternatives, setAlternatives] = useState<ChallengeFields[]>([]);
 
   // const [defaultValues, setDefaultValues] = useState({
   //   title: '',

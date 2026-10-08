@@ -6,8 +6,9 @@ import { DashPageHome } from '@/components/web/dash/pages/DashPageHome';
 import { DashPageJourneyList } from '@/components/web/dash/pages/DashPageJourneyList';
 import { DashPageReport } from '@/components/web/dash/pages/DashPageReport';
 import { DashPageSearchLevel } from '@/components/web/dash/pages/DashPageSearchLevel';
-import { dashTabs } from '@/utils/consts';
+import { dashTabs, DashTabKey } from '@/utils/consts';
 import { useRouter } from 'next/router';
+import type { ReactElement, ReactNode } from 'react';
 
 export default function DashPages() {
   const router = useRouter();
@@ -43,9 +44,12 @@ export default function DashPages() {
     }
   }
 
+  // Runtime cast: the router value can be undefined/string[]; indexing an
+  // object literal with those values already yielded undefined at runtime.
   function getActiveTabLabel() {
     if (!router) return;
-    return dashTabs[router.query.tab];
+    if (typeof router.query.tab !== 'string') return;
+    return dashTabs[router.query.tab as DashTabKey];
   }
 
   // useEffect(() => {
@@ -67,6 +71,6 @@ export default function DashPages() {
   );
 }
 
-DashPages.getLayout = function getLayout(page) {
+DashPages.getLayout = function getLayout(page: ReactElement): ReactNode {
   return <DashLayout>{page}</DashLayout>;
 };

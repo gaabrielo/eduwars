@@ -40,7 +40,10 @@ interface GameProgressContextValue {
     levelId: string,
     heroPositionOverride?: HeroPosition
   ) => BattleSnapshot;
-  restoreBattleSnapshot: (snapshot: BattleSnapshot) => void;
+  restoreBattleSnapshot: (
+    snapshot: BattleSnapshot,
+    options?: { keepKnowledgeLosses?: boolean }
+  ) => void;
   updateHeroPosition: (levelId: string, position: HeroPosition) => void;
   markPlacementCollected: (levelId: string, placementId: number) => void;
   addDialogueFlag: (flag: string) => void;
@@ -113,6 +116,7 @@ export function GameProgressProvider({
     setKnowledge(savedProgress.knowledge);
     setCurrentLevelId(savedProgress.currentLevelId);
     setCharacterName(savedProgress.characterName);
+    setDiary(savedProgress.diary);
     setOverworldState((previous) => ({
       ...previous,
       completedBattleIds: savedProgress.completedBattleIds,
@@ -121,7 +125,6 @@ export function GameProgressProvider({
       collectedPlacementIdsByLevel:
         savedProgress.collectedPlacementIdsByLevel,
       dialogueFlags: savedProgress.dialogueFlags,
-      diary: savedProgress.diary,
       activeUI: null,
       battleEnemy: null,
     }));
@@ -209,10 +212,20 @@ export function GameProgressProvider({
     []
   );
 
-  const restoreBattleSnapshot = useCallback((snapshot: BattleSnapshot) => {
-    setCurrentDay(snapshot.currentDay);
-    setKnowledge(snapshot.knowledge);
-    setCurrentLevelId(snapshot.currentLevelId);
+  const restoreBattleSnapshot = useCallback(
+    (
+      snapshot: BattleSnapshot,
+      options?: { keepKnowledgeLosses?: boolean }
+    ) => {
+      // With keepKnowledgeLosses the player confirms fleeing after having lost
+      // Knowledge Points in this battle: the current total (losses included)
+      // is kept instead of restoring the pre-battle value from the snapshot.
+      const keepKnowledgeLosses = options?.keepKnowledgeLosses ?? false;
+      setCurrentDay(snapshot.currentDay);
+      if (!keepKnowledgeLosses) {
+        setKnowledge(snapshot.knowledge);
+      }
+      setCurrentLevelId(snapshot.currentLevelId);
     setCharacterName(snapshot.characterName);
     setOverworldState((previous) => ({
       ...previous,
@@ -231,6 +244,9 @@ export function GameProgressProvider({
     saveGameProgress({
       version: 1,
       ...snapshot,
+      knowledge: keepKnowledgeLosses
+        ? { ...knowledgeRef.current }
+        : snapshot.knowledge,
       watchedLessonDays: overworldStateRef.current.watchedLessonDays,
       // A fled battle must not alter the diary; keep whatever is already there.
       diary: diaryRef.current,

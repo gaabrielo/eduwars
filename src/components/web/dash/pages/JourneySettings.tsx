@@ -41,8 +41,8 @@ export function JourneySettings({ data: levelData }: any) {
   const [data, setData] = useState<any>();
   const [defaultObject, setDefaultObject] = useState<any>();
   const [isEdited, setIsEdited] = useState(false);
-  const coverFileInputRef = useRef(null);
-  const [selectedFile, setSelectedFile] = useState(null);
+  const coverFileInputRef = useRef<HTMLInputElement>(null);
+  const [selectedFile, setSelectedFile] = useState<string | null>(null);
   const [selectedCoverUrl, setSelectedCoverUrl] = useState<null | string>();
   console.log('🚀 ~ JourneySettings ~ selectedCoverUrl:', selectedCoverUrl);
 
@@ -100,8 +100,8 @@ export function JourneySettings({ data: levelData }: any) {
     coverFileInputRef.current?.click();
   }
 
-  const handleChange = (event) => {
-    const file = event.target.files[0];
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
 
     if (file) {
       setSelectedCoverUrl('__LOADED_IMAGE__');
