@@ -63,7 +63,7 @@ const level = {
     {
       id: 2,
       x: 4,
-      y: 4,
+      y: 6,
       type: PLACEMENT_TYPE_BATTLE_FRAME,
       width: 2,
       height: 2,
@@ -72,8 +72,8 @@ const level = {
       enemy: {
         name: "Professor Python",
         spriteFrame: TILES.ROGUE_LEFT,
-        entry: { x: 6, y: 4 },
-        target: { x: 5, y: 4 },
+        entry: { x: 5, y: 4 },
+        target: { x: 5, y: 6 },
       },
     },
     {

@@ -1,5 +1,8 @@
 export const DEBUG_MODE = false;
 
+export const COURSE_FEEDBACK_FORM_URL =
+  "https://docs.google.com/forms/d/e/1FAIpQLSe-V7HAfotMIbmizIw-ZmxpFgwqowQ2-j7ORk4Iz30Cn0rSvQ/viewform?usp=dialog";
+
 export const CELL_SIZE = 16;
 export const Z_INDEX_LAYER_SIZE = 10;
 export const SPRITE_SHEET_SRC = "/spritesheet.png";

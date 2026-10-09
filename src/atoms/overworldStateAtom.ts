@@ -16,6 +16,8 @@ export interface OverworldState {
     | 'NPC_BATTLE'
     | 'BATTLE_DEFEAT'
     | 'BATTLE_SUMMARY'
+    | 'COURSE_COMPLETE'
+    | 'HOW_TO_PLAY'
     | 'DIARY'
     | 'WARDROBE'
     | 'SKIN_SELECTION'
@@ -25,6 +27,7 @@ export interface OverworldState {
   battleSummary: BattleSummary | null;
   completedBattleIds: string[];
   watchedLessonDays: number[];
+  courseSequenceAcknowledged: boolean;
   heroPositionByLevel: Record<
     string,
     { x: number; y: number; facingDirection: string }
@@ -44,6 +47,8 @@ export const overworldStateAtom = atom<OverworldState>({
       | 'NPC_BATTLE'
       | 'BATTLE_DEFEAT'
       | 'BATTLE_SUMMARY'
+      | 'COURSE_COMPLETE'
+      | 'HOW_TO_PLAY'
       | 'DIARY'
       | 'WARDROBE'
       | 'SKIN_SELECTION'
@@ -52,6 +57,7 @@ export const overworldStateAtom = atom<OverworldState>({
     battleSummary: null as BattleSummary | null,
     completedBattleIds: [] as string[],
     watchedLessonDays: [] as number[],
+    courseSequenceAcknowledged: false,
     heroPositionByLevel: {},
     collectedPlacementIdsByLevel: {},
     dialogueFlags: [],

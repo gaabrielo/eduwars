@@ -7,6 +7,7 @@ import {
 } from '@/atoms/overworldStateAtom';
 import { knowledgeStateAtom } from '@/atoms/knowledgeStateAtom';
 import { getDiaryConceptLabel } from '@/data/pythonConcepts';
+import { hasNextLesson } from '@/data/pythonCourse';
 import { CheckCircle2, Lightbulb, Medal, XCircle } from 'lucide-react';
 
 // Celebration palette follows the game's yellow/green style.
@@ -109,9 +110,10 @@ export default function BattleSummaryScreen() {
       : 0;
 
   const closeSummary = () => {
+    const courseFinished = !hasNextLesson(battleSummary.day);
     setOverworldState((previous) => ({
       ...previous,
-      activeUI: null,
+      activeUI: courseFinished ? 'COURSE_COMPLETE' : null,
       battleSummary: null,
     }));
   };

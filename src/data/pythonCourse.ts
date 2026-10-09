@@ -426,6 +426,26 @@ export function getLessonByDay(day: number): PythonLesson | undefined {
   return PYTHON_COURSE.find((lesson) => lesson.day === day);
 }
 
+export function getLastLessonDay(): number {
+  return PYTHON_COURSE.reduce(
+    (lastDay, lesson) => (lesson.day > lastDay ? lesson.day : lastDay),
+    0
+  );
+}
+
+export function hasNextLesson(day: number): boolean {
+  return getLessonByDay(day + 1) !== undefined;
+}
+
+export function isCourseSequenceComplete(
+  completedBattleIds: readonly string[]
+): boolean {
+  return PYTHON_COURSE.every((lesson) => {
+    const battleId = BATTLE_ID_BY_DAY[lesson.day];
+    return battleId !== undefined && completedBattleIds.includes(battleId);
+  });
+}
+
 export function getBattleQuestionsForDay(day: number): PythonQuestion[] {
   return getLessonByDay(day)?.questions ?? [];
 }

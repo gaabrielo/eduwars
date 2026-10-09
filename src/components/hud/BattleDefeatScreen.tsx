@@ -42,6 +42,7 @@ export default function BattleDefeatScreen() {
       battleEnemy: null,
       battleSummary: null,
       completedBattleIds: [],
+      courseSequenceAcknowledged: false,
     }));
   };
 

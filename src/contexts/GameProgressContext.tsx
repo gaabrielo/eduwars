@@ -23,6 +23,10 @@ import {
   clearDiary,
 } from '@/services/diary';
 import {
+  getLastLessonDay,
+  isCourseSequenceComplete,
+} from '@/data/pythonCourse';
+import {
   clearGameProgress,
   loadGameProgress,
   saveGameProgress,
@@ -73,6 +77,7 @@ function buildProgress(
     heroPositionByLevel: overworldState.heroPositionByLevel,
     completedBattleIds: overworldState.completedBattleIds,
     watchedLessonDays: overworldState.watchedLessonDays,
+    courseSequenceAcknowledged: overworldState.courseSequenceAcknowledged,
     collectedPlacementIdsByLevel:
       overworldState.collectedPlacementIdsByLevel,
     dialogueFlags: overworldState.dialogueFlags,
@@ -112,7 +117,15 @@ export function GameProgressProvider({
 
   useEffect(() => {
     const savedProgress = loadGameProgress();
-    setCurrentDay(savedProgress.currentDay);
+    const lastLessonDay = getLastLessonDay();
+    const finishedCourse =
+      savedProgress.currentDay > lastLessonDay ||
+      isCourseSequenceComplete(savedProgress.completedBattleIds);
+    const restoredDay =
+      savedProgress.currentDay > lastLessonDay
+        ? lastLessonDay
+        : savedProgress.currentDay;
+    setCurrentDay(restoredDay);
     setKnowledge(savedProgress.knowledge);
     setCurrentLevelId(savedProgress.currentLevelId);
     setCharacterName(savedProgress.characterName);
@@ -125,7 +138,11 @@ export function GameProgressProvider({
       collectedPlacementIdsByLevel:
         savedProgress.collectedPlacementIdsByLevel,
       dialogueFlags: savedProgress.dialogueFlags,
-      activeUI: null,
+      courseSequenceAcknowledged: savedProgress.courseSequenceAcknowledged,
+      activeUI:
+        finishedCourse && !savedProgress.courseSequenceAcknowledged
+          ? 'COURSE_COMPLETE'
+          : null,
       battleEnemy: null,
     }));
     setIsHydrated(true);
@@ -248,6 +265,8 @@ export function GameProgressProvider({
         ? { ...knowledgeRef.current }
         : snapshot.knowledge,
       watchedLessonDays: overworldStateRef.current.watchedLessonDays,
+      courseSequenceAcknowledged:
+        overworldStateRef.current.courseSequenceAcknowledged,
       // A fled battle must not alter the diary; keep whatever is already there.
       diary: diaryRef.current,
       savedAt: new Date().toISOString(),
@@ -337,6 +356,7 @@ export function GameProgressProvider({
       collectedPlacementIdsByLevel: {},
       watchedLessonDays: [],
       dialogueFlags: [],
+      courseSequenceAcknowledged: false,
     }));
   }, [setCharacterName, setCurrentDay, setCurrentLevelId, setDiary, setKnowledge, setOverworldState]);
 

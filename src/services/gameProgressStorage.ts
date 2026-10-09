@@ -156,6 +156,8 @@ export function loadGameProgress(): GameProgress {
     return {
       ...parsedProgress,
       watchedLessonDays: getWatchedLessonDays(parsedProgress.watchedLessonDays),
+      courseSequenceAcknowledged:
+        parsedProgress.courseSequenceAcknowledged === true,
       // Older saves predate the diary; each record is validated individually so
       // a corrupted entry can never break the rest of the progress.
       diary: getDiary(parsedProgress.diary ?? createEmptyDiary()),

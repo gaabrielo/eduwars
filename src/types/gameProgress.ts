@@ -21,6 +21,7 @@ export interface GameProgress {
   heroPositionByLevel: Record<string, HeroPosition>;
   completedBattleIds: string[];
   watchedLessonDays: number[];
+  courseSequenceAcknowledged: boolean;
   collectedPlacementIdsByLevel: Record<string, number[]>;
   dialogueFlags: string[];
   /** History recorded by the Knowledge Diary (attempts, concepts to review). */
@@ -30,7 +31,11 @@ export interface GameProgress {
 
 export type BattleSnapshot = Omit<
   GameProgress,
-  'version' | 'savedAt' | 'watchedLessonDays' | 'diary'
+  | 'version'
+  | 'savedAt'
+  | 'watchedLessonDays'
+  | 'diary'
+  | 'courseSequenceAcknowledged'
 >;
 
 export function createInitialGameProgress(): GameProgress {
@@ -46,6 +51,7 @@ export function createInitialGameProgress(): GameProgress {
     heroPositionByLevel: {},
     completedBattleIds: [],
     watchedLessonDays: [],
+    courseSequenceAcknowledged: false,
     collectedPlacementIdsByLevel: {},
     dialogueFlags: [],
     diary: createEmptyDiary(),

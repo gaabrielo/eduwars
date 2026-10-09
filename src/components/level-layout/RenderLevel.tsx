@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from 'react';
 import { LevelState } from '@/classes/LevelState';
 import { LevelProps } from '@/utils/types';
 import HeroHud from '@/components/hud/HeroHud';
+import HowToPlayScreen from '@/components/hud/HowToPlayScreen';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import { currentLevelIdAtom } from '@/atoms/currentLevelIdAtom';
 import { currentDayAtom } from '@/atoms/currentDayAtom';
@@ -20,6 +21,7 @@ import ClassroomScreen from '@/components/hud/ClassroomScreen';
 import BattleQuizScreen from '@/components/hud/BattleQuizScreen';
 import BattleDefeatScreen from '@/components/hud/BattleDefeatScreen';
 import BattleSummaryScreen from '@/components/hud/BattleSummaryScreen';
+import CourseCompleteScreen from '@/components/hud/CourseCompleteScreen';
 import KnowledgeDiaryScreen from '@/components/hud/KnowledgeDiaryScreen';
 import SkinSelectionScreen from '@/components/hud/SkinSelectionScreen';
 import DialogueScreen from '@/components/hud/DialogueScreen';
@@ -31,6 +33,7 @@ import {
 import { BattleSnapshot, HeroPosition } from '@/types/gameProgress';
 import type { DiaryAttempt } from '@/types/diary';
 import { buildBattleSummary } from '@/services/diary';
+import { hasNextLesson } from '@/data/pythonCourse';
 
 export default function RenderLevel() {
   const [level, setLevel] = useState<LevelProps['level'] | null>(null);
@@ -197,7 +200,9 @@ export default function RenderLevel() {
       }
 
       if (victory) {
-        setCurrentDay((day) => day + 1);
+        if (hasNextLesson(currentDayRef.current)) {
+          setCurrentDay((day) => day + 1);
+        }
         setKnowledge((previous) => ({
           ...previous,
           current: previous.max + 1,
@@ -347,10 +352,12 @@ export default function RenderLevel() {
       </div>
 
       <HeroHud />
+      <HowToPlayScreen />
       <ClassroomScreen />
       <BattleQuizScreen />
       <BattleDefeatScreen />
       <BattleSummaryScreen />
+      <CourseCompleteScreen />
       <KnowledgeDiaryScreen />
       <SkinSelectionScreen />
       <DialogueScreen />
