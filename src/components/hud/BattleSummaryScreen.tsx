@@ -7,6 +7,7 @@ import {
 } from '@/atoms/overworldStateAtom';
 import { knowledgeStateAtom } from '@/atoms/knowledgeStateAtom';
 import { getDiaryConceptLabel } from '@/data/pythonConcepts';
+import { playSfx } from '@/services/sfx';
 import { hasNextLesson } from '@/data/pythonCourse';
 import { CheckCircle2, Lightbulb, Medal, XCircle } from 'lucide-react';
 
@@ -97,6 +98,7 @@ export default function BattleSummaryScreen() {
     lastCelebrationAt = now;
 
     fireVictoryConfetti();
+    playSfx('win');
   }, [activeUI, battleSummary]);
 
   if (activeUI !== 'BATTLE_SUMMARY') return null;

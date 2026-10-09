@@ -7,6 +7,7 @@ import { LevelState } from '@/classes/LevelState';
 import { LevelProps } from '@/utils/types';
 import HeroHud from '@/components/hud/HeroHud';
 import HowToPlayScreen from '@/components/hud/HowToPlayScreen';
+import SfxControls from '@/components/hud/SfxControls';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import { currentLevelIdAtom } from '@/atoms/currentLevelIdAtom';
 import { currentDayAtom } from '@/atoms/currentDayAtom';
@@ -353,6 +354,7 @@ export default function RenderLevel() {
 
       <HeroHud />
       <HowToPlayScreen />
+      <SfxControls />
       <ClassroomScreen />
       <BattleQuizScreen />
       <BattleDefeatScreen />

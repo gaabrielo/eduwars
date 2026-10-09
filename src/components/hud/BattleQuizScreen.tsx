@@ -7,6 +7,7 @@ import {
 import { knowledgeStateAtom } from "@/atoms/knowledgeStateAtom";
 import { currentDayAtom } from "@/atoms/currentDayAtom";
 import { getBattleQuestionsForDay, getLessonByDay } from "@/data/pythonCourse";
+import { playSfx } from "@/services/sfx";
 import { useState, useEffect, useRef } from "react";
 import Sprite from "@/components/object-graphics/Sprite";
 import { TILES } from "@/utils/tiles";
@@ -116,6 +117,7 @@ export default function BattleQuizScreen() {
     setEnemyHitKey((prev) => prev + 1);
 
     if (isCorrect) {
+      playSfx("success");
       setShowFeedback("Correto! O NPC perdeu vida.");
 
       timeoutRef.current = setTimeout(() => {
@@ -127,6 +129,7 @@ export default function BattleQuizScreen() {
         }
       }, 1500);
     } else {
+      playSfx("fail");
       const knowledgeDamage = isSpecialAttack ? 2 : 1;
       const newKnowledge = Math.max(0, knowledge.current - knowledgeDamage);
       knowledgeLostRef.current += knowledgeDamage;
